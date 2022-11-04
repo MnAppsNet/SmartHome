@@ -1,5 +1,6 @@
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
+import time
 from PIL import Image, ImageDraw, ImageFont
 
 '''
@@ -52,3 +53,33 @@ class Display():
     def clear(self):
         self.disp.clear()
         self.image = None
+
+class TemperatureAndHumidityScreen(Display):
+    def __init__(self,font='',imageRotation = 180):
+        self._parent = super(TemperatureAndHumidityScreen, self)
+        self._parent.__init__(font,imageRotation)
+
+    def showData(self,humidity,temperature):
+        lastUpdateText = Texts.getLastUpdateTimeText()
+        humidityText = Texts.getLastUpdateTimeText(humidity)
+        temperatureText = Texts.getLastUpdateTimeText(temperature)
+        self._parent.writeText(lastUpdateText,8)
+        self._parent.writeText(temperatureText,12)
+        self._parent.writeText(humidityText,14)
+        self._parent.flush()
+
+class Texts:
+    def getLastUpdateTimeText():
+        #Set time zone
+        time.environ['TZ'] = 'Europe/Athens'
+        try:
+            time.tzset()
+        except:
+            pass #System is not UNIX
+        return "Last update: {0}".format(time.strftime("%H:%M:%S"))
+
+    def getTemperatureText(temperature):
+        return "Temperature: {0:0.1f}".format(temperature)
+
+    def getHumidityText(humidity):
+        return "Humidity: {0:0.1f}".format(humidity)

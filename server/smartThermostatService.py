@@ -1,9 +1,8 @@
-import serviceTools as tools
-from displayController import Display
+from displayController import TemperatureAndHumidityScreen
 from sensorController import Sensor
 from thermostatController import Thermostat
 from dataHandler import Data, DATA_KEY
-from time import sleep, strftime, localtime
+from time import sleep
 from httpHandler import Server
 
 #Constants :
@@ -14,7 +13,7 @@ SAVE_EVERY = 2 #Loops. after these amount of loops, the data will be hard saved
 #Instances of all our handlers :
 data = Data()
 server = Server(dataHandler=data)
-display = Display(data.getValue(DATA_KEY.font))
+display = TemperatureAndHumidityScreen(data.getValue(DATA_KEY.font))
 sensor = Sensor(SENSOR_PIN)
 thermostat = Thermostat(THERMOSTAT_PIN,data)
 
@@ -23,15 +22,9 @@ try:
     while True:
         humidity,temperature = sensor.readData()
         thermostat.checkState(temperature)
-        lastUpdateText = tools.getLastUpdateTimeText()
-        humidityText = tools.getLastUpdateTimeText(humidity)
-        temperatureText = tools.getLastUpdateTimeText(temperature)
-        display.writeText(lastUpdateText,8)
-        display.writeText(temperatureText,12)
-        display.writeText(humidityText,14)
-        display.flush()
+        display.showData(humidity,temperature)
+        if data == None: break;
         sleep(data.getValue(DATA_KEY.refreshRate))
-        server.serviceStatus = tools.SERVICE_STATUS.Active
         if count >= SAVE_EVERY:
             count = 1
             data.save()
@@ -40,4 +33,3 @@ except KeyboardInterrupt:
 except Exception as e:
         print(e)
 server.stop()
-server.serviceStatus = tools.SERVICE_STATUS.Inactive
