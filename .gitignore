@@ -1,3 +1,7 @@
 /server/__pycache__
 /server/cert.pem
 /server/key.pem
+/server/keys/cert.pem
+/server/keys/key.pem
+/server/controllers/__pycache__
+/server/handlers/__pycache__

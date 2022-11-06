@@ -1,5 +1,4 @@
-from urllib.request import DataHandler
-from dataHandler import Data, DATA_KEY
+from handlers.dataHandler import Data, DATA_KEY
 try:
     import Adafruit_DHT as dht
 except:

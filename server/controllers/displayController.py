@@ -77,12 +77,6 @@ class TemperatureAndHumidityScreen(Display):
 
 class Texts:
     def getLastUpdateTimeText():
-        #Set time zone
-        try:
-            time.environ['TZ'] = 'Europe/Athens'
-            time.tzset()
-        except:
-            pass #System is not UNIX
         return "Last update: {0}".format(time.strftime("%H:%M:%S"))
 
     def getTemperatureText(temperature):

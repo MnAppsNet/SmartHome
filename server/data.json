@@ -1,0 +1,1 @@
+{"serviceStatus": true, "currentTemperature": 0, "currentHumidity": 0, "requiredTemperature": 20.5, "temperatureOffset": 0.5, "refreshRate": 60, "lastUpdate": "20:16:47", "font": "", "thermostatState": false, "users": {"mnapps": "2bfdf26d7021739d6d90406b53c1d18ad193e857c86936cbfc7175b3f77d4664", "test": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"}}

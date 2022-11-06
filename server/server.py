@@ -1,6 +1,6 @@
 from http.server import HTTPServer
-from dataHandler import Data
-from requestHandler import requestHandler
+from handlers.dataHandler import Data
+from handlers.requestHandler import requestHandler
 from threading import Thread
 from const import Constants
 import ssl

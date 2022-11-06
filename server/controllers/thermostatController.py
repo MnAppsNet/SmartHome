@@ -2,7 +2,7 @@ try:
     import RPi.GPIO as GPIO
 except:
     GPIO = None #For testing purposes
-from dataHandler import Data, DATA_KEY
+from handlers.dataHandler import Data, DATA_KEY
 
 '''
 This script is working with a heat element that can be enabled and disabled by connection or reconnecting
@@ -30,6 +30,9 @@ class Thermostat:
         if self._on == False: return #Can't enable heat when thermostat is off
         if GPIO != None:
             GPIO.output(self._pin,state)
+            if self._data != None:
+                actualState = True if GPIO.input(self._pin) == 1 else False
+                self._data.setValue(DATA_KEY.thermostatState,actualState)
 
     def _getThermostatState(self):
         if self._data == None:
@@ -64,9 +67,11 @@ class Thermostat:
     def checkState(self,temperature):
         threshold = self._getTemperatureThreshold()
         offset = self._getTemperatureOffset()
+        if GPIO == None:
+            return
         if temperature < threshold: #It's cold...
             #Turn heat on
-            self._setHeatState(True)
+            self._setHeatState(GPIO.HIGH)
         elif temperature > threshold + offset: #It's hot...
             #Turn heat off
-            self._setHeatState(False)
+            self._setHeatState(GPIO.LOW)
