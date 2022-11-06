@@ -1,4 +1,7 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except:
+    GPIO = None #For testing purposes
 from dataHandler import Data, DATA_KEY
 
 '''
@@ -10,21 +13,23 @@ and the switch can be done by providing a positive voltage between the Base and 
 #Constants
 DEFAULT_THRESHOLD_TEMPERATURE = 20
 DEFAULT_TEMPERATURE_OFFSET = 0.5
-
+MAX_TEMPERATURE_OFFSET = 2
 class Thermostat:
     def __init__(self,thermostatPin, dataHandler:Data = None):
         self._data = dataHandler
         self._pin = thermostatPin            #The pin where the heat switch is connected
         self._on = True                      #Thermostat is not off and it is working
-        GPIO.setwarnings(False)
-        GPIO.setup(self._pin, GPIO.OUT)
+        if GPIO != None:
+            GPIO.setwarnings(False)
+            GPIO.setup(self._pin, GPIO.OUT)
 
     def _setHeatState(self,state):
         if state:
             #If we are about to open the heat, check if thermostat is off
             self._on = self._getThermostatState()
         if self._on == False: return #Can't enable heat when thermostat is off
-        GPIO.output(self._pin,state)
+        if GPIO != None:
+            GPIO.output(self._pin,state)
 
     def _getThermostatState(self):
         if self._data == None:

@@ -11,6 +11,10 @@ class DATA_KEY:
     refreshRate         = 'refreshRate'
     font                = 'font'
     thermostatState     = 'thermostatState'
+    users               = 'users'
+    class USERS_KEY:
+        username = 'username'
+        password = 'password'
 
 LOCAL_FILE_NAME = 'data.json'
 DEFAULT_VALUES = {
@@ -20,7 +24,12 @@ DEFAULT_VALUES = {
     DATA_KEY.temperatureOffset : 0.5, #*C
     DATA_KEY.refreshRate : 60, #Seconds
     DATA_KEY.font : '',
-    DATA_KEY.thermostatState : False #Closed
+    DATA_KEY.thermostatState : False, #Closed
+    DATA_KEY.users : #/!\ Default username and password for the initial user /!\
+        {'admin' : '756bc47cb5215dc3329ca7e1f7be33a2dad68990bb94b76d90aa07f4e44a233a'}
+        #Password is the sha256 of the sha256 of the actual user password, default: 1234
+        #The password is hashed once on the client and we get the hashed password and hash it again
+        #before we store it
 }
 
 class Data:
@@ -29,12 +38,16 @@ class Data:
         self.load()
 
     def getValue(self,key):
-        if key in self._data:
+        if key not in self._data:
             return None
         return self._data[key]
 
     def setValue(self,key,value):
-        self._data[key] = value
+        try:
+            self._data[key] = value
+            return True
+        except:
+            return False
 
     def deleteKey(self,key):
         del self._data[key]
@@ -51,11 +64,15 @@ class Data:
         file.close()
 
     def save(self):
-        if self._data == {}:
-            return
         try:
-            file = open('file.json','w')
+            if self._data == {}:
+                return False
+            try:
+                file = open('file.json','w')
+            except:
+                return False
+            json.dump(self._data,file)
+            file.close()
+            return True
         except:
-            return
-        json.dump(self._data,file)
-        file.close()
+            return False

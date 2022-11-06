@@ -1,7 +1,9 @@
 from urllib.request import DataHandler
 from dataHandler import Data, DATA_KEY
-import Adafruit_DHT as dht
-
+try:
+    import Adafruit_DHT as dht
+except:
+    dht = None #For testing purposes
 '''
 This script is for DHT22 temperature and humidity sensors.
 '''
@@ -12,7 +14,11 @@ class Sensor():
         self._data = dataHandler
 
     def readData(self):
-        self.humidity,self.temperature = dht.read_retry(dht.DHT22, self._pin)
+        if dht != None:
+            self.humidity,self.temperature = dht.read_retry(dht.DHT22, self._pin)
+        else:
+            self.humidity = 0
+            self.temperature = 0
         if self._data != None:
             self._data.setValue(DATA_KEY.currentTemperature,self.temperature)
             self._data.setValue(DATA_KEY.currentHumidity,self.humidity)
