@@ -1,4 +1,4 @@
-# SmartThermostat
+# SmartHome
 Work in progress...
 
 The server is on a raspberry pi

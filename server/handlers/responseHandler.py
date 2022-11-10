@@ -1,11 +1,12 @@
 class RESPONSE_CODE:
     not_authorized = 401
-    success = 200
+    ok = 200
 
 class RESPONSE_KEY:
     status = 'status'
     message = 'message'
     data = 'data'
+    sessionID = 'sessionID'
 
 class MESSAGE:
     noAuthHeader = "No authorization header received"

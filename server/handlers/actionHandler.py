@@ -98,6 +98,14 @@ class Actions:
         '''
         return Actions._getData(data,response,DATA_KEY.lastUpdate)
 
+    def getSessionID(data:Data,response:dict,value,actionName:str,currentUser):
+        '''
+        request : "actions":["getSessionID"]
+        '''
+        response[RESPONSE_KEY.sessionID] = "" #Don't know the sessionID in this context,
+                                              #create the key and it will get populated later
+        return response #Don't do anything, call this action when you just want the sessionID
+
     #================#
     # Setter Actions #
     #================#====================================
@@ -189,3 +197,12 @@ class Actions:
         if message == None:
             message = MESSAGE.Status.success if result == True else MESSAGE.Status.error
         return Actions._doResult(data,response,actionName,message)
+
+    def doLogOut(data:Data,response:dict,value,actionName:str,currentUser):
+        '''
+        request : "actions":["doLogOut"]
+        '''
+        response[RESPONSE_KEY.sessionID] = None #By setting the sessionID of the response to None,
+                                                #we let the request handler know that we want to delete
+                                                #the current session. We can't do it in this context
+        return response #Don't do anything, call this action when you just want to destroy the session
