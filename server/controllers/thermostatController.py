@@ -12,7 +12,7 @@ and the switch can be done by providing a positive voltage between the Base and 
 
 #Constants
 DEFAULT_THRESHOLD_TEMPERATURE = 20
-DEFAULT_TEMPERATURE_OFFSET = 0.5
+DEFAULT_TEMPERATURE_OFFSET = 0.2
 MAX_TEMPERATURE_OFFSET = 2
 class Thermostat:
     def __init__(self,thermostatPin, dataHandler:Data = None):
@@ -47,7 +47,7 @@ class Thermostat:
     def _getTemperatureOffset(self):
         if self._data == None:
             return DEFAULT_TEMPERATURE_OFFSET
-        return self._data.getValue(DATA_KEY.requiredTemperature)
+        return self._data.getValue(DATA_KEY.temperatureOffset)
 
     def turnOff(self):
         self._off = True
