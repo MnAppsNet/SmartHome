@@ -45,6 +45,7 @@ class Display():
         draw.text((0, self.y),text,  font=font, fill=255)
         _,_,_,height = font.getbbox(text)
         self.y += height + spaceAfterLine
+        print(text);
 
     def flush(self):
         if self.image == None: return
@@ -66,13 +67,15 @@ class TemperatureAndHumidityScreen(Display):
         self._parent = super(TemperatureAndHumidityScreen, self)
         self._parent.__init__(font,imageRotation)
 
-    def showData(self,humidity,temperature):
+    def showData(self,humidity,temperature,thermostatState):
         lastUpdateText = Texts.getLastUpdateTimeText()
         humidityText = Texts.getHumidityText(humidity)
         temperatureText = Texts.getTemperatureText(temperature)
-        self._parent.writeText(lastUpdateText,8)
+        thermostat = Texts.getThermostatState(thermostatState)
+        self._parent.writeText(lastUpdateText,12)
         self._parent.writeText(temperatureText,12)
-        self._parent.writeText(humidityText,14)
+        self._parent.writeText(humidityText,12)
+        self._parent.writeText(thermostat,12)
         self._parent.flush()
 
 class Texts:
@@ -84,3 +87,6 @@ class Texts:
 
     def getHumidityText(humidity):
         return "Humidity: {0:0.1f}".format(humidity)
+
+    def getThermostatState(state):
+        return "Thermostat: {}".format("On" if state else "Off")

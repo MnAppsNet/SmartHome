@@ -1,3 +1,8 @@
+
+//
+//Not used anymore, to be integrated later...
+//
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -8,34 +13,26 @@ import HouseIcon from '@mui/icons-material/House';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import sha256 from 'crypto-js/sha256';
+import requestHandler from '../requestHandler';
+import Const from '../const';
 
  const Login = (props) => {
 
-  const State = props.state
+  const State = props.state;
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const server = data.get('server')
     const username = data.get('username')
     const password = sha256(data.get('password'));
-    const loginToken = "Basic " + btoa(username+":"+password)
-
-    const request = {
-      actions : "getSessionID"
+    State.server.set(server);
+    const reqHandler = new requestHandler(State,server);
+    reqHandler.addCommand(Const.Commands.getSessionID);
+    if (!reqHandler.sendCommands(username,password)){
+      State.showAlert(Const.Messages.failedToLogin,Const.Status.error);
+      State.sessionID.set(null);
     }
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'User-Agent': State.userAgent.get, 'Authorization': loginToken },
-      body: JSON.stringify(request)
-    };
-    fetch('https://localhost:6969', requestOptions)
-        .then(
-          response => {
-            console.log(response.headers);
-            response.json().then(
-              (data) => {
-                debugger;
-              });});
   };
 
   return (
@@ -56,6 +53,16 @@ import sha256 from 'crypto-js/sha256';
             SmartHome
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="server"
+              label="Server"
+              name="server"
+              defaultValue={State.server.get()}
+              autoFocus
+            />
             <TextField
               margin="normal"
               required
@@ -63,7 +70,6 @@ import sha256 from 'crypto-js/sha256';
               id="username"
               label="Username"
               name="username"
-              autoFocus
             />
             <TextField
               margin="normal"

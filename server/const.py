@@ -1,6 +1,9 @@
 import pathlib
 
 class Constants:
+    FRONTEND_STATIC = 'client/static'
+    FRONTEND = 'client'
+
     TIMEZONE = 'Europe/Athens'
 
     ENCODING = 'UTF-8'

@@ -5,3 +5,4 @@
 /server/keys/key.pem
 /server/controllers/__pycache__
 /server/handlers/__pycache__
+/server/client

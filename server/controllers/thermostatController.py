@@ -18,26 +18,25 @@ class Thermostat:
     def __init__(self,thermostatPin, dataHandler:Data = None):
         self._data = dataHandler
         self._pin = thermostatPin            #The pin where the heat switch is connected
-        self._on = True                      #Thermostat is not off and it is working
+        self._off = False                    #Thermostat is not off and it is working
         if GPIO != None:
             GPIO.setwarnings(False)
-            GPIO.setup(self._pin, GPIO.OUT)
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(self._pin, GPIO.OUT, initial=False)
 
     def _setHeatState(self,state):
-        if state:
+        if state == True:
             #If we are about to open the heat, check if thermostat is off
-            self._on = self._getThermostatState()
-        if self._on == False: return #Can't enable heat when thermostat is off
+            self._off = self._getThermostatState()
+        if self._off == True: state = False #Can't enable heat when thermostat is off
         if GPIO != None:
             GPIO.output(self._pin,state)
-            if self._data != None:
-                actualState = True if GPIO.input(self._pin) == 1 else False
-                self._data.setValue(DATA_KEY.thermostatState,actualState)
+        return state
 
     def _getThermostatState(self):
         if self._data == None:
             return self._off
-        self._off = self._data.getValue(DATA_KEY.thermostatState)
+        self._off = self._data.getValue(DATA_KEY.thermostatOff)
         return self._off
 
     def _getTemperatureThreshold(self):
@@ -65,13 +64,21 @@ class Thermostat:
         self._offset = offset
 
     def checkState(self,temperature):
+        actualState = False
         threshold = self._getTemperatureThreshold()
         offset = self._getTemperatureOffset()
         if GPIO == None:
+            print("Please install GPIO module...")
             return
         if temperature < threshold: #It's cold...
             #Turn heat on
-            self._setHeatState(GPIO.HIGH)
+            actualState = self._setHeatState(True)
         elif temperature > threshold + offset: #It's hot...
             #Turn heat off
-            self._setHeatState(GPIO.LOW)
+            actualState = self._setHeatState(False)
+
+        #Get the actual state of the thermostat
+        if self._data != None:
+            self._data.setValue(DATA_KEY.thermostatState,actualState)
+
+        return actualState

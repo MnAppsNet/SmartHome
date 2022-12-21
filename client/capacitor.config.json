@@ -1,0 +1,8 @@
+{
+  "appId": "io.ionic.smartthermostat",
+  "appName": "SmartThermostat",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "build",
+  "cordova": {}
+}

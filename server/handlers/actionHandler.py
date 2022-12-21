@@ -1,9 +1,9 @@
-from hashlib import sha256
 from const import Constants
 from handlers.dataHandler import Data, DATA_KEY
 from handlers.responseHandler import RESPONSE_KEY, MESSAGE
 from controllers.thermostatController import MAX_TEMPERATURE_OFFSET
-import base64
+#from hashlib import sha256
+#import base64
 
 class Actions:
 
@@ -11,39 +11,40 @@ class Actions:
     # Actions that don't contain the char '_' in their name are exposed by the server #
     #=================================================================================#
 
-    def authorize_(authToken,data:Data):
-        '''
-        Check if use is authorized and return authorized username
-        '''
-        if authToken[:6] != 'Basic ':
-            return
-        users = data.getValue(DATA_KEY.users)
-        authToken = authToken[6:]
-        authToken = base64.b64decode(authToken).decode(Constants.ENCODING)
-        authToken = authToken.split(':')
-        if authToken[0] not in users:
-            return None
-        authToken[1] = sha256(authToken[1].encode(Constants.ENCODING)).hexdigest()
-        if users[authToken[0]] == authToken[1]:
-            return authToken[0]
-        return None
+    #Authorization to be implemented
+    #def authorize_(authToken,data:Data):
+    #    '''
+    #    Check if use is authorized and return authorized username
+    #    '''
+    #    if authToken[:6] != 'Basic ':
+    #        return
+    #    users = data.getValue(DATA_KEY.users)
+    #    authToken = authToken[6:]
+    #    authToken = base64.b64decode(authToken).decode(Constants.ENCODING)
+    #    authToken = authToken.split(':')
+    #    if authToken[0] not in users:
+    #        return None
+    #    authToken[1] = sha256(authToken[1].encode(Constants.ENCODING)).hexdigest()
+    #    if users[authToken[0]] == authToken[1]:
+    #        return authToken[0]
+    #    return None
 
     #================#
     # Server Actions #
     #================#====================================
-    def _getData(data:Data,response,dataKey):
+    def _getData(data:Data,response,dataKey,actionName):
         if RESPONSE_KEY.data not in response:
             response[RESPONSE_KEY.data] = {}
-        response[RESPONSE_KEY.data][dataKey] = data.getValue(dataKey)
+        response[RESPONSE_KEY.data][actionName] = data.getValue(dataKey)
         return response
 
-    def _setData(data:Data,response,dataKey,value):
+    def _setData(data:Data,response,dataKey,value,actionName):
         if RESPONSE_KEY.data not in response:
             response[RESPONSE_KEY.data] = {}
         if data.setValue(dataKey,value) == True:
-            response[RESPONSE_KEY.data]['SET:' + dataKey] = MESSAGE.Status.success
+            response[RESPONSE_KEY.data][actionName] = MESSAGE.Status.success
         else:
-            response[RESPONSE_KEY.data]['SET:' + dataKey] = MESSAGE.Status.error
+            response[RESPONSE_KEY.data][actionName] = MESSAGE.Status.error
         return response
 
     def _doResult(data:Data,response,action,message:str):
@@ -55,50 +56,50 @@ class Actions:
     #================#
     # Getter Actions #
     #================#====================================
-    # Takes 5 arguments: data , response , value (not used), actionName, currentUser
-    def getCurrentTemperature(data:Data,response:dict,value,actionName:str,currentUser):
+    # Takes 5 arguments: data , response , value (not used), actionName
+    def getCurrentTemperature(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getCurrentTemperature"]
         '''
-        return Actions._getData(data,response,DATA_KEY.currentTemperature)
+        return Actions._getData(data,response,DATA_KEY.currentTemperature,actionName)
 
-    def getRequiredTemperature(data:Data,response:dict,value,actionName:str,currentUser):
+    def getRequiredTemperature(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getRequiredTemperature"]
         '''
-        return Actions._getData(data,response,DATA_KEY.requiredTemperature)
+        return Actions._getData(data,response,DATA_KEY.requiredTemperature,actionName)
 
-    def getCurrentHumidity(data:Data,response:dict,value,actionName:str,currentUser):
+    def getCurrentHumidity(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getCurrentHumidity"]
         '''
-        return Actions._getData(data,response,DATA_KEY.currentHumidity)
+        return Actions._getData(data,response,DATA_KEY.currentHumidity,actionName)
 
-    def getThermostatState(data:Data,response:dict,value,actionName:str,currentUser):
+    def getThermostatState(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getThermostatState"]
         '''
-        return Actions._getData(data,response,DATA_KEY.thermostatState)
+        return Actions._getData(data,response,DATA_KEY.thermostatState,actionName)
 
-    def getRefreshRate(data:Data,response:dict,value,actionName:str,currentUser):
+    def getRefreshRate(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getRefreshRate"]
         '''
-        return Actions._getData(data,response,DATA_KEY.refreshRate)
+        return Actions._getData(data,response,DATA_KEY.refreshRate,actionName)
 
-    def getTemperatureOffset(data:Data,response:dict,value,actionName:str,currentUser):
+    def getTemperatureOffset(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getTemperatureOffset"]
         '''
-        return Actions._getData(data,response,DATA_KEY.temperatureOffset)
+        return Actions._getData(data,response,DATA_KEY.temperatureOffset,actionName)
 
-    def getLastUpdate(data:Data,response:dict,value,actionName:str,currentUser):
+    def getLastUpdate(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getLastUpdate"]
         '''
-        return Actions._getData(data,response,DATA_KEY.lastUpdate)
+        return Actions._getData(data,response,DATA_KEY.lastUpdate,actionName)
 
-    def getSessionID(data:Data,response:dict,value,actionName:str,currentUser):
+    def getSessionID(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getSessionID"]
         '''
@@ -110,7 +111,7 @@ class Actions:
     # Setter Actions #
     #================#====================================
     # Takes 4 arguments: data , response , value , actionName
-    def setRequiredTemperature(data:Data,response:dict,value,actionName:str,currentUser):
+    def setRequiredTemperature(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":[{"setRequiredTemperature":10}]
         '''
@@ -121,17 +122,17 @@ class Actions:
                 return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         if type(value) != float:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
-        return Actions._setData(data,response,DATA_KEY.requiredTemperature,value)
+        return Actions._setData(data,response,DATA_KEY.requiredTemperature,value,actionName)
 
-    def setThermostatState(data:Data,response:dict,value,actionName:str,currentUser):
+    def setThermostatState(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":[{"setThermostatState":False}]
         '''
         if type(value) != bool:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
-        return Actions._setData(data,response,DATA_KEY.thermostatState,value)
+        return Actions._setData(data,response,DATA_KEY.thermostatState,value,actionName)
 
-    def setTemperatureOffset(data:Data,response:dict,value,actionName:str,currentUser):
+    def setTemperatureOffset(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":[{"setTemperatureOffset":0.5}]
         '''
@@ -144,9 +145,9 @@ class Actions:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         if value > MAX_TEMPERATURE_OFFSET:
             return MESSAGE.setError(response,MESSAGE.overThanMaxTempOffset,str(MAX_TEMPERATURE_OFFSET))
-        return Actions._setData(data,response,DATA_KEY.thermostatState,value)
+        return Actions._setData(data,response,DATA_KEY.thermostatState,value,actionName)
 
-    def setRefreshRate(data:Data,response:dict,value,actionName:str,currentUser):
+    def setRefreshRate(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":[{"setRefreshRate":10}]
         '''
@@ -157,52 +158,19 @@ class Actions:
                 return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         if type(value) != int:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
-        return Actions._setData(data,response,DATA_KEY.refreshRate,value)
+        return Actions._setData(data,response,DATA_KEY.refreshRate,value,actionName)
 
     #============#
     # Do Actions #
     #============#========================================
     # Takes 3 arguments: data , response , value , actionName
-    def doSave(data:Data,response:dict,value,actionName:str,currentUser):
+    def doSave(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["doSave"]
         '''
         success = data.save()
         if success:
-            message = MESSAGE.Status.success
+            message = MESSAGE.dataSaved
         else:
-            message = MESSAGE.Status.error
+            message = MESSAGE.dataSaveFailed
         return Actions._doResult(data,response,actionName,message)
-
-    def doCreateUser(data:Data,response:dict,value,actionName:str,currentUser):
-        '''
-        request : "actions":[{"doCreateUser":{"newUser":passwordHash}}]
-        '''
-        if type(value) != dict:
-            return Actions._doResult(data,response,actionName,MESSAGE.wrongValueType.replace('&1',actionName))
-        newUser = list(value.keys())[0]
-        passwordHash = value[newUser]
-        result, message = data.addUser(newUser,passwordHash,currentUser)
-        if message == None:
-            message = MESSAGE.Status.success if result == True else MESSAGE.Status.error
-        return Actions._doResult(data,response,actionName,message)
-
-    def doDeleteUser(data:Data,response:dict,value,actionName:str,currentUser):
-        '''
-        request : "actions":[{"doDeleteUser":"newUser"}]
-        '''
-        if type(value) != str:
-            return Actions._doResult(data,response,actionName,MESSAGE.wrongValueType.replace('&1',actionName))
-        result, message = data.deleteUser(value,currentUser)
-        if message == None:
-            message = MESSAGE.Status.success if result == True else MESSAGE.Status.error
-        return Actions._doResult(data,response,actionName,message)
-
-    def doLogOut(data:Data,response:dict,value,actionName:str,currentUser):
-        '''
-        request : "actions":["doLogOut"]
-        '''
-        response[RESPONSE_KEY.sessionID] = None #By setting the sessionID of the response to None,
-                                                #we let the request handler know that we want to delete
-                                                #the current session. We can't do it in this context
-        return response #Don't do anything, call this action when you just want to destroy the session
