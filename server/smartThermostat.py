@@ -44,7 +44,7 @@ try:
                         #display.showData(humidity,temperature,thermostatState) <= Can be commented out in a screen needed
                         if data == None: break;
                         data.setValue(DATA_KEY.serviceStatus,True)
-                        data.setValue(DATA_KEY.lastUpdate,datetime.now(pytz.timezone('TIMEZONE')).strftime("%H:%M:%S"))
+                        data.setValue(DATA_KEY.lastUpdate,datetime.now(pytz.timezone(TIMEZONE)).strftime("%H:%M:%S"))
                         data.setValue(DATA_KEY.currentTemperature,temperature)
                         data.setValue(DATA_KEY.currentHumidity,humidity)
 
