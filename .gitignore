@@ -6,3 +6,5 @@
 /server/controllers/__pycache__
 /server/handlers/__pycache__
 /server/client
+/server/state_changes.json
+/server/data.json

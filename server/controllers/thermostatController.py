@@ -2,7 +2,10 @@ try:
     import RPi.GPIO as GPIO
 except:
     GPIO = None #For testing purposes
+import json
 from handlers.dataHandler import Data, DATA_KEY
+from const import Constants
+from handlers.stateLogsHandler import StateLogs
 
 '''
 This script is working with a heat element that can be enabled and disabled by connection or reconnecting
@@ -49,6 +52,12 @@ class Thermostat:
             return DEFAULT_TEMPERATURE_OFFSET
         return self._data.getValue(DATA_KEY.temperatureOffset)
 
+    def _logStateChanges(self,currentState,temperature,threshold):
+        prevState = self._getThermostatState()
+        if prevState == currentState:
+            return #State not changed
+        StateLogs.addEntry(currentState,temperature,threshold)
+
     def turnOff(self):
         self._off = True
         self._data.setValue(DATA_KEY.thermostatState,False)
@@ -69,7 +78,7 @@ class Thermostat:
         offset = self._getTemperatureOffset()
         if GPIO == None:
             print("Please install GPIO module...")
-            return
+            #return
         if temperature < threshold: #It's cold...
             #Turn heat on
             actualState = self._setHeatState(True)
@@ -79,6 +88,7 @@ class Thermostat:
 
         #Get the actual state of the thermostat
         if self._data != None:
+            self._logStateChanges(actualState,temperature,threshold)
             self._data.setValue(DATA_KEY.thermostatState,actualState)
 
         return actualState

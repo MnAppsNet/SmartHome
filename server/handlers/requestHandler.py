@@ -38,22 +38,22 @@ class requestHandler():
         Returns : Action:str , Value:any
         '''
         if type(action) == str:
-            # This must be a Getter or a Do action
+            # This must be a Getter or a Do action, Setters require some value
             if action[:3] != 'get' and action[:2] != 'do':
                 self.response = MESSAGE.setError(
                     MESSAGE.invalidAction, action)
             return action, None
         elif type(action) == dict:
-            # This must be a Setter action
             valid = True
             if len(action) < 1:
-                return None, None
+                return None, None #Empty list...
             if len(action) > 1:
-                valid = False
+                valid = False #The action dictionary should only contain one key and one value
             for key in action:
-                if key[:3] != 'set' and key[:2] != 'do' or valid == False:
+                if key[:3] != 'set' and key[:2] != 'do' and key[:3] != 'get' or valid == False:
                     self.response = MESSAGE.setError(
                         MESSAGE.invalidAction, action)
+                    return None, None
                 return key, action[key],  # Action , Value
 
     def performActions(self,data:Data):
@@ -76,9 +76,9 @@ class requestHandler():
                 if '_' in action:
                     continue
 
-                value = None  # The value of a setter action, used only on setter actions
+                value = None #The extra info that might be needed along with the command
 
-                # Check if action is a Getter, a Do or a Setter
+                # Check if action validity
                 action, value = self._checkAction(action)
                 if self.response[RESPONSE_KEY.status] == MESSAGE.Status.error:
                     break

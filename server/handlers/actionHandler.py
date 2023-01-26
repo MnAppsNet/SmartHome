@@ -2,6 +2,7 @@ from const import Constants
 from handlers.dataHandler import Data, DATA_KEY
 from handlers.responseHandler import RESPONSE_KEY, MESSAGE
 from controllers.thermostatController import MAX_TEMPERATURE_OFFSET
+from handlers.stateLogsHandler import StateLogs
 #from hashlib import sha256
 #import base64
 
@@ -56,7 +57,7 @@ class Actions:
     #================#
     # Getter Actions #
     #================#====================================
-    # Takes 5 arguments: data , response , value (not used), actionName
+    # Takes 5 arguments: data , response , value, actionName
     def getCurrentTemperature(data:Data,response:dict,value,actionName:str):
         '''
         request : "actions":["getCurrentTemperature"]
@@ -106,6 +107,24 @@ class Actions:
         response[RESPONSE_KEY.sessionID] = "" #Don't know the sessionID in this context,
                                               #create the key and it will get populated later
         return response #Don't do anything, call this action when you just want the sessionID
+
+    def getStateLogs(data:Data,response:dict,value,actionName:str):
+        '''
+        request : "actions":[{"getStateLogs":{ "year":year, "month":month, "day":day }}]
+        '''
+        if type(value) != dict:
+            return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
+        if not "year" in value:
+            value["year"] = None
+        if not "month" in value:
+            value["month"] = None
+        if not "day" in value:
+            value["day"] = None
+        logs = StateLogs().getEntries(value["year"],value["month"],value["day"])
+        if not RESPONSE_KEY.data in response:
+            response[RESPONSE_KEY.data] = {}
+        response[RESPONSE_KEY.data][actionName] = logs
+        return response
 
     #================#
     # Setter Actions #

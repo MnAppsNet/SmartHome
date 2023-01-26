@@ -1,0 +1,13 @@
+{
+    "actions": [
+        "getCurrentTemperature",
+        "getCurrentHumidity",
+        "getLastUpdate",
+        "getRequiredTemperature",
+        "getThermostatState",
+        {
+            "setRequiredTemperature": 20
+        },
+        "getRequiredTemperature"
+    ]
+}

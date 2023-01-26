@@ -19,6 +19,7 @@ class DATA_KEY:
     users               = 'users'
     lastUpdate          = 'lastUpdate'
     thermostatOff       = 'thermostatOff'
+    stateLogs           = 'stateLogs'
     class USERS_KEY:
         username = 'username'
         password = 'password'
