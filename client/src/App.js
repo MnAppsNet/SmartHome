@@ -27,6 +27,7 @@ const Copyright = (props) => {
 }
 
 const theme = createTheme({
+ '&::-webkit-scrollbar': {width: '0'},
   palette: {
     mode: 'dark',
     primary: {
@@ -67,6 +68,7 @@ const App = () => {
   const [refreshRate, setRefreshRate] = useState(0);
   const [temperatureOffset, setTemperatureOffset] = useState(0.5);
   const [lastUpdate, setLastUpdate] = useState(null);
+  const [stateLogs, setStateLogs] = useState({});
 
   function setAlert(message,status){
     setAlertMessage(String(message));
@@ -102,6 +104,7 @@ const App = () => {
       CurrentHumidity : {get:()=>currentHumidity,set:(value)=>setCurrentHumidity(value)},
       RequiredTemperature : {get:()=>requiredTemperature,set:(value)=>setRequiredTemperature(value),send:sendRequiredTemperature},
       CurrentTemperature : {get:()=>currentTemperature,set:(value)=>setCurrentTemperature(value)},
+      StateLogs : {get:()=>stateLogs,set:(value)=>setStateLogs(value)}
     }
   }
 

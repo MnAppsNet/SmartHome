@@ -120,7 +120,7 @@ class Actions:
             value["month"] = None
         if not "day" in value:
             value["day"] = None
-        logs = StateLogs().getEntries(value["year"],value["month"],value["day"])
+        logs = StateLogs.getEntries(value["year"], value["month"], value["day"])
         if not RESPONSE_KEY.data in response:
             response[RESPONSE_KEY.data] = {}
         response[RESPONSE_KEY.data][actionName] = logs

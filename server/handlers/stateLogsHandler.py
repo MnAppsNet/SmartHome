@@ -59,8 +59,17 @@ class StateLogs:
         if (year == None ): year = self._year
         if (month == None ): month = self._month
         if (day == None ): day = self._day
-
-        return self._logs[self._year][self._month][self._day]
+        if (type(year) != str): year = str(year)
+        if (type(month) != str): month = "{0:0=2d}".format(month)
+        if (type(day) != str): day = "{0:0=2d}".format(day)
+        result = self._logs
+        if year in result: result = result[year]
+        else: return []
+        if month in result: result = result[month]
+        else: return []
+        if day in result: result = result[day]
+        else: return []
+        return result
 
     def destroy(self):
         self._closeLogs()
@@ -76,7 +85,7 @@ class StateLogs:
         logs.insert(time,state,temperature,threshold)
         logs.destroy()
 
-    def getEntries( year = None, month = None,day = None)->list:
+    def getEntries( year=None, month=None, day=None)->list:
         logs = StateLogs()
         values = logs.get(year,month,day)
         logs.destroy()

@@ -11,6 +11,7 @@ const Constants = {
         getRefreshRate: "getRefreshRate",
         getTemperatureOffset: "getTemperatureOffset",
         getLastUpdate: "getLastUpdate",
+        getStateLogs: "getStateLogs",
         //SET Commands >>
         setRequiredTemperature: "setRequiredTemperature",
         setThermostatState: "setThermostatState",
