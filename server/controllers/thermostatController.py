@@ -82,9 +82,9 @@ class Thermostat:
         if temperature < threshold: #It's cold...
             #Turn heat on
             actualState = True
-        elif temperature > threshold + offset: #It's hot...
-            #Turn heat off
-            actualState = False
+        #elif temperature > threshold + offset: #It's hot...
+        #    #Turn heat off
+        #    actualState = False
 
         actualState = self._setHeatState(actualState)
 
