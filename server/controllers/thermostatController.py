@@ -74,6 +74,7 @@ class Thermostat:
 
     def checkState(self,temperature):
         actualState = False
+        prevState = self._data.getValue(DATA_KEY.thermostatState)
         threshold = self._getTemperatureThreshold()
         offset = self._getTemperatureOffset()
         if GPIO == None:
@@ -82,9 +83,10 @@ class Thermostat:
         if temperature < threshold: #It's cold...
             #Turn heat on
             actualState = True
-        #elif temperature > threshold + offset: #It's hot...
-        #    #Turn heat off
-        #    actualState = False
+        elif prevState == True and temperature < threshold + offset:
+            #If it was previously turned on and the new temp is not reached yet
+            #Keep the heat on
+            actualState = True
 
         actualState = self._setHeatState(actualState)
 
