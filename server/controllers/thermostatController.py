@@ -78,13 +78,15 @@ class Thermostat:
         offset = self._getTemperatureOffset()
         if GPIO == None:
             print("Please install GPIO module...")
-            #return
+            return
         if temperature < threshold: #It's cold...
             #Turn heat on
-            actualState = self._setHeatState(True)
+            actualState = True
         elif temperature > threshold + offset: #It's hot...
             #Turn heat off
-            actualState = self._setHeatState(False)
+            actualState = False
+
+        actualState = self._setHeatState(actualState)
 
         #Get the actual state of the thermostat
         if self._data != None:
