@@ -6,13 +6,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import StateOnIcon from '@mui/icons-material/LocalFireDepartment';
 import StateOffIcon from '@mui/icons-material/InvertColorsOff';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 
 const Log = (props) =>{
     const log = props.log
     const stateText = (log.state)?"ON":"OFF"
-    const logText = "State: " + stateText + " | Temperature: " + log.temp + " *C | Required: " + log.req_temp
+    const temp = (Math.round(parseFloat(log.temp) * 100) / 100).toFixed(2)
+    const reqTemp = (Math.round(parseFloat(log.req_temp) * 100) / 100).toFixed(2)
+    const logText = "State: " + stateText + " | Temperature: " + temp + " *C | Required: " + reqTemp
     return(
         <ListItem>
             <ListItemAvatar>
@@ -35,6 +35,7 @@ const History = (props) => {
     for (let i = 0; i < logs.length; i++) {
         logItems.push(<Log log={logs[i]} />);
     }
+    logItems = logItems.reverse()
     return (
         <List sx={{ width: '100%', height:'150px', bgcolor: 'background.paper', overflowX: "hidden", overflowY: "scroll", '&::-webkit-scrollbar': {width: '0'} }}>
           {logItems}
