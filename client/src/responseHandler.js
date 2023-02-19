@@ -52,7 +52,7 @@ export default class responseHandler {
             command = Object.keys(command)[0]
         }
         const result = this.results.data[command];
-        this.state.showAlert(result, Const.Status.information)
+        this.state.showAlert(result, this.results.status)
     }
 
     _processGetCommand(command) {

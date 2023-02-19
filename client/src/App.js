@@ -96,7 +96,7 @@ const App = () => {
 
   const State = {
     setLoading: (value) => setLoading(value),
-    showAlert: (value) => setAlert(value),
+    showAlert: (message,status) => setAlert(message,status),
     //deviceID: {get:()=>localSessionID},
     server: {
       set: (value) => setServer(value),
