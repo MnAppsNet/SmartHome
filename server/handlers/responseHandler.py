@@ -22,7 +22,7 @@ class MESSAGE:
     userNotAuthorized = "User '&1' is not authorized to perform this action"
     userAlreadyExists = "User already exists"
     noSelfDeletion = "You can not delete your own user"
-    dataSaved = "Data saves"
+    dataSaved = "Data saved"
     dataSaveFailed = "Failed to save data"
     userCreated = "User '&1' created"
     userCreationFailed = "Failed to create user '&1'"

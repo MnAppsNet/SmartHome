@@ -48,10 +48,11 @@ class Actions:
             response[RESPONSE_KEY.data][actionName] = MESSAGE.Status.error
         return response
 
-    def _doResult(data:Data,response,action,message:str):
+    def _doResult(data:Data,response,action,message:str,status:str):
         if RESPONSE_KEY.data not in response:
             response[RESPONSE_KEY.data] = {}
         response[RESPONSE_KEY.data][action] = message
+        response[RESPONSE_KEY.status] = status
         return response
 
     #================#
@@ -202,8 +203,10 @@ class Actions:
         request : "actions":["doSave"]
         '''
         success = data.save()
+        status = MESSAGE.Status.error
         if success:
             message = MESSAGE.dataSaved
+            status = MESSAGE.Status.success
         else:
             message = MESSAGE.dataSaveFailed
-        return Actions._doResult(data,response,actionName,message)
+        return Actions._doResult(data,response,actionName,message,status)
