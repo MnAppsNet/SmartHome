@@ -126,6 +126,12 @@ class Actions:
         response[RESPONSE_KEY.data][actionName] = logs
         return response
 
+    def getSchedule(data:Data,response:dict,value,actionName:str):
+        '''
+        request : "actions":["getSchedule"]
+        '''
+        return Actions._getData(data,response,DATA_KEY.schedule,actionName)
+
     #================#
     # Setter Actions #
     #================#====================================
@@ -178,6 +184,14 @@ class Actions:
         if type(value) != int:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         return Actions._setData(data,response,DATA_KEY.refreshRate,value,actionName)
+
+    def setSchedule(data:Data,response:dict,value,actionName:str):
+        '''
+        request : "actions":[{"setSchedule":{"time":"requiredTemperature"}}]
+        '''
+        if type(value) != dict:
+            return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
+        return Actions._setData(data,response,DATA_KEY.schedule,value,actionName)
 
     #============#
     # Do Actions #

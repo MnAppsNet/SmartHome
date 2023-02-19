@@ -17,6 +17,7 @@ import LeftIcon from '@mui/icons-material/ArrowLeft';
 import RightIcon from '@mui/icons-material/ArrowRight';
 import IconButton from '@mui/material/IconButton';
 import { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 
 const marks = [
     {
@@ -51,106 +52,113 @@ const Dashboard = (props) => {
     let reqHandler = new requestHandler(State);
     let updateViewInterval = null;
 
-    function changeDate(increase = null){
+    function changeDate(increase = null) {
         if (date === null) setDate(new Date());
-        if (increase === null){
+        if (increase === null) {
             setDate(new Date());
         }
-        else if (increase === true){
+        else if (increase === true) {
             const tmpDate = new Date()
             tmpDate.setDate(date.getDate() + 1)
             setDate(tmpDate);
         }
-        else if (increase === false){
+        else if (increase === false) {
             const tmpDate = new Date()
             tmpDate.setDate(date.getDate() - 1)
             setDate(tmpDate);
         }
     }
 
-    function updateView(){
+    function updateView() {
         //if (State.sessionID.get() == null || State.sessionID.get() == "" || State.sessionID.get() == "null") {
         //    clearInterval(updateViewInterval);
         //    return;
         //}
-        reqHandler.addCommand(Const.Commands.getCurrentTemperature);
-        reqHandler.addCommand(Const.Commands.getCurrentHumidity);
-        reqHandler.addCommand(Const.Commands.getLastUpdate);
-        reqHandler.addCommand(Const.Commands.getRequiredTemperature);
-        reqHandler.addCommand(Const.Commands.getThermostatState);
-        reqHandler.addCommand(Const.Commands.getStateLogs,
-            { "year": date.getFullYear() , "month": date.getMonth()+1, "day":date.getDate()}
+        try {
+            reqHandler.addCommand(Const.Commands.getCurrentTemperature);
+            reqHandler.addCommand(Const.Commands.getCurrentHumidity);
+            reqHandler.addCommand(Const.Commands.getLastUpdate);
+            reqHandler.addCommand(Const.Commands.getRequiredTemperature);
+            reqHandler.addCommand(Const.Commands.getThermostatState);
+            reqHandler.addCommand(Const.Commands.getSchedule);
+            reqHandler.addCommand(Const.Commands.getTemperatureOffset);
+            reqHandler.addCommand(Const.Commands.getRefreshRate);
+            reqHandler.addCommand(Const.Commands.getStateLogs,
+                { "year": date.getFullYear(), "month": date.getMonth() + 1, "day": date.getDate() }
             );
-        reqHandler.sendCommands();
+            reqHandler.sendCommands();
+        } catch { }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         if (reqHandler != null) return;
         reqHandler = new requestHandler(State);
         changeDate();
         if (updateViewInterval == null)
             updateViewInterval = setInterval(updateView, update_every)
-      },[])
+    }, [])
 
-    useEffect(()=>{
-        setDateText(date.getDate()+'.'+(date.getMonth()+1)+'.'+date.getFullYear());
+    useEffect(() => {
+        setDateText(date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear());
         updateView();
-    },[date])
+    }, [date])
 
     return (
-        <Container component="main" maxWidth="xm" sx={{ paddingTop: '5vh' }}>
+        <Container component="main" maxWidth="xm">
             <CssBaseline />
-            <Grid container style={{ padding: '10px', margin: 'auto' }}>
-                <Grid key='lastUpdate' xs={8} style={{ padding: '2px' }}>
-                    <Item title='Last Update'>
-                        <Typography variant='h5'><AccessTimeIcon /> {State.data.LastUpdate.get()}</Typography>
-                    </Item>
-                </Grid>
-                <Grid key='state' xs={4} style={{ padding: '2px' }}>
-                    <Item title="Thermostat">
-                        {State.data.ThermostatState.get() && <Typography variant='h5' style={{color:'green'}}>ON</Typography>}
-                        {!State.data.ThermostatState.get() && <Typography variant='h5' style={{color:'red'}}>OFF</Typography>}
-                    </Item>
-                </Grid>
-                <Grid key='temperature' xs={6} style={{ padding: '2px' }}>
-                    <Item title='Temperature'>
-                        <Typography variant='h5'><DeviceThermostatIcon /> {(Math.round(State.data.CurrentTemperature.get() * 100) / 100).toFixed(2)} °C</Typography>
-                    </Item>
-                </Grid>
-                <Grid key='humidity' xs={6} style={{ padding: '2px' }}>
-                    <Item title='Humidity'>
-                        <Typography variant='h5'><WaterIcon /> {(Math.round(State.data.CurrentHumidity.get() * 100) / 100).toFixed(2)} %</Typography>
-                    </Item>
-                </Grid>
-                <Grid key='requiredTemperature' xs={12} style={{ padding: '2px' }}>
-                    <Item title={'Required Temperature : ' + State.data.RequiredTemperature.get() + ' °C'}>
-                        <Slider
-                            color="secondary"
-                            getAriaLabel={() => 'Temperature'}
-                            getAriaValueText={valuetext}
-                            value={State.data.RequiredTemperature.get()}
-                            valueLabelDisplay="always"
-                            onChange={(event,value) => {State.data.RequiredTemperature.set(value)}}
-                            onChangeCommitted={(event,value) => {State.data.RequiredTemperature.send(value);}}
-                            max={30}
-                            min={-10}
-                            step={0.1}
-                            marks={marks} />
-                    </Item>
-                </Grid>
-                <Grid key='stateLogs' xs={12} style={{ padding: '2px' }}>
-                    <Item title={
-                        <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-                            {'History'}
-                            <IconButton color="secondary" onClick={()=>changeDate(false)}><LeftIcon fontSize='large'/></IconButton>
-                            <Typography sx={{cursor: "pointer"}} onClick={()=>changeDate(null)}>{dateText}</Typography>
-                            <IconButton color="secondary" onClick={()=>changeDate(true)}><RightIcon fontSize='large'/></IconButton>
-                        </div>
+            <Box sx={{ paddingTop: '70px' }}>
+                <Grid container>
+                    <Grid key='lastUpdate' xs={8} style={{ padding: '2px' }}>
+                        <Item title='Last Update'>
+                            <Typography variant='h5'><AccessTimeIcon /> {State.data.LastUpdate.get()}</Typography>
+                        </Item>
+                    </Grid>
+                    <Grid key='state' xs={4} style={{ padding: '2px' }}>
+                        <Item title="Thermostat">
+                            {State.data.ThermostatState.get() && <Typography variant='h5' style={{ color: 'green' }}>ON</Typography>}
+                            {!State.data.ThermostatState.get() && <Typography variant='h5' style={{ color: 'red' }}>OFF</Typography>}
+                        </Item>
+                    </Grid>
+                    <Grid key='temperature' xs={6} style={{ padding: '2px' }}>
+                        <Item title='Temperature'>
+                            <Typography variant='h5'><DeviceThermostatIcon /> {(Math.round(State.data.CurrentTemperature.get() * 100) / 100).toFixed(2)} °C</Typography>
+                        </Item>
+                    </Grid>
+                    <Grid key='humidity' xs={6} style={{ padding: '2px' }}>
+                        <Item title='Humidity'>
+                            <Typography variant='h5'><WaterIcon /> {(Math.round(State.data.CurrentHumidity.get() * 100) / 100).toFixed(2)} %</Typography>
+                        </Item>
+                    </Grid>
+                    <Grid key='requiredTemperature' xs={12} style={{ padding: '2px' }}>
+                        <Item title={'Required Temperature : ' + State.data.RequiredTemperature.get() + ' °C'}>
+                            <Slider
+                                color="secondary"
+                                getAriaLabel={() => 'Temperature'}
+                                getAriaValueText={valuetext}
+                                value={State.data.RequiredTemperature.get()}
+                                valueLabelDisplay="always"
+                                onChange={(event, value) => { State.data.RequiredTemperature.set(value) }}
+                                onChangeCommitted={(event, value) => { State.data.RequiredTemperature.send(value); }}
+                                max={30}
+                                min={-10}
+                                step={0.1}
+                                marks={marks} />
+                        </Item>
+                    </Grid>
+                    <Grid key='stateLogs' xs={12} style={{ padding: '2px' }}>
+                        <Item title={
+                            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                                {'History'}
+                                <IconButton color="secondary" onClick={() => changeDate(false)}><LeftIcon fontSize='large' /></IconButton>
+                                <Typography sx={{ cursor: "pointer" }} onClick={() => changeDate(null)}>{dateText}</Typography>
+                                <IconButton color="secondary" onClick={() => changeDate(true)}><RightIcon fontSize='large' /></IconButton>
+                            </div>
                         }>
-                        <History state={State} />
-                    </Item>
+                            <History state={State} />
+                        </Item>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Box>
         </Container>
     );
 }

@@ -20,6 +20,7 @@ class DATA_KEY:
     lastUpdate          = 'lastUpdate'
     thermostatOff       = 'thermostatOff'
     stateLogs           = 'stateLogs'
+    schedule            = 'schedule'
     class USERS_KEY:
         username = 'username'
         password = 'password'
@@ -40,6 +41,7 @@ DEFAULT_VALUES = {
     DATA_KEY.font : '',
     DATA_KEY.thermostatOff : False,
     DATA_KEY.thermostatState : False, #Closed
+    DATA_KEY.schedule : {},
     DATA_KEY.users : #/!\ Default username and password for the initial user /!\
         {DEFAULT_ADMIN_USER : DEFAULT_ADMIN_PASSWORD}
         #Password is the sha256 of the sha256 of the actual user password, default: 1234

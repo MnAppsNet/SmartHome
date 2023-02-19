@@ -12,11 +12,13 @@ const Constants = {
         getTemperatureOffset: "getTemperatureOffset",
         getLastUpdate: "getLastUpdate",
         getStateLogs: "getStateLogs",
+        getSchedule: "getSchedule",
         //SET Commands >>
         setRequiredTemperature: "setRequiredTemperature",
         setThermostatState: "setThermostatState",
         setTemperatureOffset: "setTemperatureOffset",
         setRefreshRate: "setRefreshRate",
+        setSchedule: "setSchedule",
         //DO Commands >>
         doSave: "doSave",
         doCreateUser: "doCreateUser",

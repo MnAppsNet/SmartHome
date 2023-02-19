@@ -2,10 +2,11 @@ try:
     import RPi.GPIO as GPIO
 except:
     GPIO = None #For testing purposes
-import json
+import json, pytz
 from handlers.dataHandler import Data, DATA_KEY
 from const import Constants
 from handlers.stateLogsHandler import StateLogs
+from datetime import datetime
 
 '''
 This script is working with a heat element that can be enabled and disabled by connection or reconnecting
@@ -47,6 +48,11 @@ class Thermostat:
             return DEFAULT_THRESHOLD_TEMPERATURE
         return self._data.getValue(DATA_KEY.requiredTemperature)
 
+    def _getTemperatureSchedule(self):
+        if self._data == None:
+            return None
+        return self._data.getValue(DATA_KEY.schedule)
+
     def _getTemperatureOffset(self):
         if self._data == None:
             return DEFAULT_TEMPERATURE_OFFSET
@@ -68,11 +74,45 @@ class Thermostat:
 
     def setTemperatureThreshold(self,temperature):
         self._threshold = temperature
+        if self._data != None:
+            self._data.setValue(DATA_KEY.requiredTemperature,temperature)
 
     def setTemperatureOffset(self,offset):
         self._offset = offset
+        if self._data != None:
+            self._data.setValue(DATA_KEY.temperatureOffset,offset)
+
+    def checkTemperatureSchedule(self):
+        '''
+        Check the temperature schedules defined and change the required temperature accordingly
+        '''
+        schedule = self._getTemperatureSchedule()
+        if schedule == None: return
+        #Get the current time in a numeric format that can be compared :
+        currentTime = int(datetime.now(pytz.timezone(Constants.TIMEZONE)).strftime("%H%M"))
+        #Get current refresh rate in minutes if more that two minutes (we don't wont to skip any schedule) :
+        refreshRate = None
+        if self._data != None:
+            refreshRate = self._data.getValue(DATA_KEY.refreshRate)
+        if refreshRate == None:
+            refreshRate = 60
+        refreshRate = int(refreshRate / 120)
+        #Check all defined temperature schedules :
+        for key in schedule:
+            #Convert key into number to be compared :
+            time = key.split(':')
+            if len(time) != 2: continue
+            time = time[0] + time[1]
+            time = int(time)
+            #Check if schedule applies and if yes set required temperature :
+            if (time - refreshRate <= currentTime and time >= currentTime ):
+                self.setTemperatureThreshold(schedule[key]);
+                break;
 
     def checkState(self,temperature):
+        '''
+        Check the thermostat state and set it according to required temperature
+        '''
         actualState = False
         prevState = self._data.getValue(DATA_KEY.thermostatState)
         threshold = self._getTemperatureThreshold()

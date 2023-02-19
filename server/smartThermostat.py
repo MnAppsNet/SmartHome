@@ -46,6 +46,7 @@ try:
                         else:
                                 prevTemp = temperature
                                 faultyTempCount = 0
+                        thermostat.checkTemperatureSchedule()
                         thermostatState = thermostat.checkState(temperature)
                         #display.showData(humidity,temperature,thermostatState) <= Can be commented out in a screen needed
                         if data == None: break;

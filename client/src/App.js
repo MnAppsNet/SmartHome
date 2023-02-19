@@ -7,6 +7,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import Const from './const';
+import Settings from './components/settings';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
 //import Login from './components/login'
 //import {v4} from "uuid";
 //import sha256 from 'crypto-js/sha256';
@@ -20,33 +24,34 @@ const Copyright = (props) => {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © SmartHome '}
-      { new Date().getFullYear()}
+      {new Date().getFullYear()}
       {'.'}
     </Typography>
   );
 }
 
 const theme = createTheme({
- '&::-webkit-scrollbar': {width: '0'},
+  '&::-webkit-scrollbar': { width: '0' },
   palette: {
     mode: 'dark',
     primary: {
-      main: '#85DCB0',
+      main: '#de7b75',
     },
     secondary: {
-      main: '#E8A87C',
+      main: '#de7b75',
     },
     background: {
       default: "#C38D9E",
-      paper: '#C1EDF0'
+      paper: '#C1EDF0',
+      secondary: '#98E1E6'
     },
     text: {
       primary: '#1f7a80',
-      secondary: '#1f7a80',
+      secondary: '#80251F',
       disabled: '#030c0d'
     },
     divider: {
-      backgroundColor: '030c0d',
+      backgroundColor: '#030c0d',
     }
   },
 });
@@ -69,10 +74,11 @@ const App = () => {
   const [temperatureOffset, setTemperatureOffset] = useState(0.5);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [stateLogs, setStateLogs] = useState({});
+  const [schedule, setSchedule] = useState({});
 
-  function setAlert(message,status){
+  function setAlert(message, status) {
     setAlertMessage(String(message));
-    switch(status){
+    switch (status) {
       case Const.Status.error: setAlertType('error'); break;
       case Const.Status.success: setAlertType('success'); break;
       case Const.Status.warning: setAlertType('warning'); break;
@@ -81,37 +87,38 @@ const App = () => {
     }
   }
 
-  function sendRequiredTemperature(){
+  function sendRequiredTemperature() {
     const reqHandler = new requestHandler(State);
-    reqHandler.addCommand(Const.Commands.setRequiredTemperature,requiredTemperature);
+    reqHandler.addCommand(Const.Commands.setRequiredTemperature, requiredTemperature);
     reqHandler.addCommand(Const.Commands.getRequiredTemperature);
     reqHandler.sendCommands();
   }
 
   const State = {
-    setLoading: (value)=>setLoading(value),
-    showAlert: (value)=>setAlert(value),
+    setLoading: (value) => setLoading(value),
+    showAlert: (value) => setAlert(value),
     //deviceID: {get:()=>localSessionID},
-    server : {
-      set: (value)=>setServer(value),
-      get: ()=>server
+    server: {
+      set: (value) => setServer(value),
+      get: () => server
     },
-    data : {
-      LastUpdate : {get:()=>lastUpdate,set:(value)=>setLastUpdate(value)},
-      TemperatureOffset : {get:()=>temperatureOffset,set:(value)=>setTemperatureOffset(value)},
-      RefreshRate : {get:()=>refreshRate,set:(value)=>setRefreshRate(value)},
-      ThermostatState : {get:()=>thermostatState,set:(value)=>setThermostatState(value)},
-      CurrentHumidity : {get:()=>currentHumidity,set:(value)=>setCurrentHumidity(value)},
-      RequiredTemperature : {get:()=>requiredTemperature,set:(value)=>setRequiredTemperature(value),send:sendRequiredTemperature},
-      CurrentTemperature : {get:()=>currentTemperature,set:(value)=>setCurrentTemperature(value)},
-      StateLogs : {get:()=>stateLogs,set:(value)=>setStateLogs(value)}
+    data: {
+      LastUpdate: { get: () => lastUpdate, set: (value) => setLastUpdate(value) },
+      TemperatureOffset: { get: () => temperatureOffset, set: (value) => setTemperatureOffset(value) },
+      RefreshRate: { get: () => refreshRate, set: (value) => setRefreshRate(value) },
+      ThermostatState: { get: () => thermostatState, set: (value) => setThermostatState(value) },
+      CurrentHumidity: { get: () => currentHumidity, set: (value) => setCurrentHumidity(value) },
+      RequiredTemperature: { get: () => requiredTemperature, set: (value) => setRequiredTemperature(value), send: sendRequiredTemperature },
+      CurrentTemperature: { get: () => currentTemperature, set: (value) => setCurrentTemperature(value) },
+      StateLogs: { get: () => stateLogs, set: (value) => setStateLogs(value) },
+      Schedule: { get: () => schedule, set: (value) => setSchedule(value) }
     }
   }
 
   //useEffect(()=>{
   //  //setServer(localStorage.getItem(Const.Session.server))
   //  setLocalSessionID(localStorage.getItem(Const.Session.localSessionID));
- // },[])
+  // },[])
   //useEffect(()=>{
   //  if (server == "https://localhost:6969") return;
   //  localStorage.setItem(Const.Session.server,server);
@@ -127,13 +134,22 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline/>
+      <CssBaseline />
       <div className="App">
-        <div style={{height:'2pt'}}>
-          { loading === true && <LinearProgress sx={{height:'2pt',}} color='secondary'/>}
+      <AppBar sx={{ position: 'fixed', height: 'fit-content' }}>
+        <Toolbar>
+          <ThermostatIcon />
+          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            SmartThermostat
+          </Typography>
+          <Settings sx={{ position:'absolute', right: '10px', top:'10px'}} state={State} />
+        </Toolbar>
+        {alertType != null && alertMessage != null && <Alert  severity={alertType} onClick={() => setAlertType(null)}>{alertMessage}</Alert>}
+      </AppBar>
+        <div style={{ height: '2pt' }}>
+          {loading === true && <LinearProgress sx={{ height: '2pt', }} color='secondary' />}
         </div>
-        { alertType != null && alertMessage != null && <Alert severity={alertType} onClick={() => setAlertType(null)}>{alertMessage}</Alert> }
-        <Dashboard state={State}/>
+        <Dashboard state={State} />
       </div>
       <Copyright sx={{ mt: 8, mb: 4 }} />
     </ThemeProvider>
