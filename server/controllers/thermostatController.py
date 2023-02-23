@@ -58,8 +58,7 @@ class Thermostat:
             return DEFAULT_TEMPERATURE_OFFSET
         return self._data.getValue(DATA_KEY.temperatureOffset)
 
-    def _logStateChanges(self,currentState,temperature,threshold):
-        prevState = self._data.getValue(DATA_KEY.thermostatState)
+    def _logStateChanges(self,currentState,prevState,temperature,threshold):
         if prevState == currentState:
             return #State not changed
         StateLogs.addEntry(currentState,temperature,threshold)
@@ -132,7 +131,7 @@ class Thermostat:
 
         #Get the actual state of the thermostat
         if self._data != None:
-            self._logStateChanges(actualState,temperature,threshold)
+            self._logStateChanges(actualState,prevState,temperature,threshold)
             self._data.setValue(DATA_KEY.thermostatState,actualState)
 
         return actualState

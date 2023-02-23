@@ -150,13 +150,13 @@ class Actions:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         return Actions._setData(data,response,DATA_KEY.requiredTemperature,value,actionName)
 
-    def setThermostatState(data:Data,response:dict,value,actionName:str):
-        '''
-        request : "actions":[{"setThermostatState":False}]
-        '''
-        if type(value) != bool:
-            return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
-        return Actions._setData(data,response,DATA_KEY.thermostatState,value,actionName)
+    #def setThermostatState(data:Data,response:dict,value,actionName:str):
+    #    '''
+    #    request : "actions":[{"setThermostatState":False}]
+    #    '''
+    #    if type(value) != bool:
+    #        return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
+    #    return Actions._setData(data,response,DATA_KEY.thermostatState,value,actionName)
 
     def setTemperatureOffset(data:Data,response:dict,value,actionName:str):
         '''
@@ -171,7 +171,7 @@ class Actions:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         if value > MAX_TEMPERATURE_OFFSET:
             return MESSAGE.setError(response,MESSAGE.overThanMaxTempOffset,str(MAX_TEMPERATURE_OFFSET))
-        return Actions._setData(data,response,DATA_KEY.thermostatState,value,actionName)
+        return Actions._setData(data,response,DATA_KEY.temperatureOffset,value,actionName)
 
     def setRefreshRate(data:Data,response:dict,value,actionName:str):
         '''
