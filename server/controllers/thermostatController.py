@@ -6,7 +6,7 @@ import json, pytz
 from handlers.dataHandler import Data, DATA_KEY
 from const import Constants
 from handlers.stateLogsHandler import StateLogs
-from datetime import datetime
+from datetime import datetime, timedelta
 
 '''
 This script is working with a heat element that can be enabled and disabled by connection or reconnecting
@@ -95,6 +95,7 @@ class Thermostat:
             refreshRate = self._data.getValue(DATA_KEY.refreshRate)
         if refreshRate == None:
             refreshRate = 60
+        prevTime = int((datetime.now(pytz.timezone(Constants.TIMEZONE)) - timedelta(seconds=refreshRate)).strftime("%H%M%S"))
         #Check all defined temperature schedules :
         for key in schedule:
             #Convert key into number to be compared :
@@ -103,7 +104,7 @@ class Thermostat:
             time = time[0] + time[1] + '00'
             time = int(time)
             #Check if schedule applies and if yes set required temperature :
-            if (time >= currentTime - refreshRate and time <= currentTime ):
+            if (time >= prevTime and time <= currentTime ):
                 self.setTemperatureThreshold(schedule[key]);
 
     def checkState(self,temperature):
