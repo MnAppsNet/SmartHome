@@ -46,7 +46,10 @@ class Thermostat:
     def _getTemperatureThreshold(self):
         if self._data == None:
             return DEFAULT_THRESHOLD_TEMPERATURE
-        return self._data.getValue(DATA_KEY.requiredTemperature)
+        threshold = self._data.getValue(DATA_KEY.requiredTemperature)
+        if type(threshold) != float:
+            threshold = float(threshold)
+        return threshold
 
     def _getTemperatureSchedule(self):
         if self._data == None:
@@ -74,6 +77,11 @@ class Thermostat:
             self._data.setValue(DATA_KEY.thermostatState,True)
 
     def setTemperatureThreshold(self,temperature):
+        try:
+            if type(temperature) != float:
+                temperature = float(temperature)
+        except:
+            return
         if self._data != None:
             self._data.setValue(DATA_KEY.requiredTemperature,temperature)
 
@@ -106,6 +114,7 @@ class Thermostat:
             #Check if schedule applies and if yes set required temperature :
             if (time >= prevTime and time <= currentTime ):
                 self.setTemperatureThreshold(schedule[key]);
+                break;
 
     def checkState(self,temperature):
         '''
