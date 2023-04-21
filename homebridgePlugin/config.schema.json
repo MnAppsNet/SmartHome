@@ -1,0 +1,22 @@
+{
+  "pluginAlias": "SmartThermostat",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+				"title": "Name",
+				"type": "string",
+				"default": "Thermostat",
+				"required": true
+			},
+			"ip": {
+				"title": "Service URL",
+				"type": "string",
+				"default": "192.168.0.0:6969/actions",
+				"required": true
+			}
+    }
+  }
+}
