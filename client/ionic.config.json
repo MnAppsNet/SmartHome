@@ -1,7 +1,0 @@
-{
-    "name": "SmartThermostat",
-    "integrations": {
-      "capacitor": {}
-    },
-    "type": "react"
-  }
