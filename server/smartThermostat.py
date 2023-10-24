@@ -29,6 +29,8 @@ try:
                 tempChangeRange = 5
                 faultyTempCount = 0
                 while True:
+                        if server.isActive() == False:
+                                server.start()
                         humidity,temperature = sensor.readData()
                         if temperature == None:
                                 print("Failed to get temperature... Trying again...")
@@ -70,7 +72,11 @@ try:
                 print("Smart thermostat service stopped by the user...")
         data.setValue(DATA_KEY.serviceStatus,False)
         server.stop()
-except:
+except Exception as e:
+        print(str(e))
         print(traceback.format_exc())
         data.setValue(DATA_KEY.serviceStatus,False)
-        server.stop()
+        try:
+                server.stop()
+        except:
+                pass

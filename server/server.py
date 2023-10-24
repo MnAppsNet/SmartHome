@@ -14,16 +14,25 @@ class Server():
         self._data = dataHandler
         self._host = host
         self._port = 6969
-        self._serve = True
-        self._thread = Thread(target=self._startFlaskApp, name="smartThermostatServer")
+        self._serve = False
 
     def start(self):
-        self._thread.start()
+        if self._serve == False:
+            self._thread = Thread(target=self._startFlaskApp, name="smartThermostatServer")
+            self._thread.start()
+
+    def isActive(self):
+        return self._serve
 
     def _startFlaskApp(self):
         global server
         server = self
-        app.run(port=server._port, host=server._host)
+        self._serve = True
+        try:
+            app.run(port=server._port, host=server._host)
+        except Exception as e:
+            print(str(e))
+        self._serve = False
 
     def stop(self):
         self._serve = False
