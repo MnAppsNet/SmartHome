@@ -21,6 +21,15 @@ class DATA_KEY:
     thermostatOff       = 'thermostatOff'
     stateLogs           = 'stateLogs'
     schedule            = 'schedule'
+    sensors             = 'sensors'
+    primarySensor       = 'primarySensor'
+    class SENSORS:
+        pin                 = "pin"
+        ip                  = "ip"
+        temperature         = "temperature"
+        humidity            = "humidity"
+        temperatureOffset   = "temperatureOffset"
+        humidityOffset      = "humidityOffset"
     class USERS_KEY:
         username = 'username'
         password = 'password'
@@ -41,7 +50,9 @@ DEFAULT_VALUES = {
     DATA_KEY.font : '',
     DATA_KEY.thermostatOff : False,
     DATA_KEY.thermostatState : False, #Closed
+    DATA_KEY.sensors : [], #Define sensors to be used - dictionaries with either 'pin' or 'ip' as key
     DATA_KEY.schedule : {},
+    DATA_KEY.primarySensor : 0,
     DATA_KEY.users : #/!\ Default username and password for the initial user /!\
         {DEFAULT_ADMIN_USER : DEFAULT_ADMIN_PASSWORD}
         #Password is the sha256 of the sha256 of the actual user password, default: 1234
@@ -77,7 +88,7 @@ class Data:
     def load(self):
         if not path.isfile(Constants.LOCAL_FILE_NAME):
             self._data = DEFAULT_VALUES
-            return;
+            return
         try:
             file = open(Constants.LOCAL_FILE_NAME,'r')
         except:

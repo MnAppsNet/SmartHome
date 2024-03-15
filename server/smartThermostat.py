@@ -23,6 +23,7 @@ try:
         thermostat = Thermostat(Constants.THERMOSTAT_PIN,data)
         #display = TemperatureAndHumidityScreen(data.getValue(DATA_KEY.font)) <= Can be commented out in a screen needed
         sensor = Sensor(Constants.SENSOR_PIN)
+
         try:
                 prevTemp = None
                 count = 0
@@ -31,10 +32,12 @@ try:
                 while True:
                         if server.isActive() == False:
                                 server.start()
-                        humidity,temperature = sensor.readData()
+                        primarySensor = data.getValue(DATA_KEY.primarySensor)
+                        if (primarySensor == None): primarySensor = 0
+                        humidity,temperature = sensor.readData(primarySensor)
                         if temperature == None:
                                 print("Failed to get temperature... Trying again...")
-                                continue;
+                                continue
                         if (prevTemp == None): prevTemp = temperature #Initialize...
                         if ( temperature < prevTemp - tempChangeRange or temperature > prevTemp + tempChangeRange ):
                                 #Very huge temperature difference in a sort time frame
@@ -51,11 +54,12 @@ try:
                         thermostat.checkTemperatureSchedule()
                         thermostatState = thermostat.checkState(temperature)
                         #display.showData(humidity,temperature,thermostatState) <= Can be commented out in a screen needed
-                        if data == None: break;
+                        if data == None: break
                         data.setValue(DATA_KEY.serviceStatus,True)
                         data.setValue(DATA_KEY.lastUpdate,datetime.now(pytz.timezone(Constants.TIMEZONE)).strftime("%H:%M:%S"))
                         data.setValue(DATA_KEY.currentTemperature,temperature)
                         data.setValue(DATA_KEY.currentHumidity,humidity)
+                        sensor.updateSensorReadings()
 
                         #Print to console the current state :
                         print(Texts.getLastUpdateTimeText())

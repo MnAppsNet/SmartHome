@@ -132,6 +132,12 @@ class Actions:
         request : "actions":["getSchedule"]
         '''
         return Actions._getData(data,response,DATA_KEY.schedule,actionName)
+    
+    def getSensorData(data:Data,response:dict,value,actionName:str):
+        '''
+        request : "actions":["getSensorData"]
+        '''
+        return Actions._getData(data,response,DATA_KEY.sensors,actionName)
 
     #================#
     # Setter Actions #
@@ -193,6 +199,40 @@ class Actions:
         if type(value) != dict:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
         return Actions._setData(data,response,DATA_KEY.schedule,value,actionName)
+
+    def setSensorData(data:Data,response:dict,value,actionName:str):
+        '''
+        request : "actions":[{"setSensorData":[{"pin":"","ip":"","temperatureOffset":"","humidityOffset":""} , ...]}]
+        '''
+        if type(value) is not list:
+            return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
+        sensors = data.getValue(DATA_KEY.sensors)
+        for itm in value: #For each sesnor value received
+            key = None
+            #Check if pin or ip privided (key fields)
+            if DATA_KEY.SENSORS.pin in itm:
+                key = DATA_KEY.SENSORS.pin
+            elif DATA_KEY.SENSORS.ip in itm:
+                key = DATA_KEY.SENSORS.ip
+            else:
+                continue
+            #Check if pin or ip already exists and modify whatever changed
+            modified = False
+            for i in range(0,len(sensors)): 
+                if key in sensors[i]:
+                    modified = True
+                    if sensors[i][key] == itm[key]:
+                        temperatureOffset = 0
+                        if DATA_KEY.SENSORS.temperatureOffset in itm[key]:
+                            temperatureOffset = itm[key][DATA_KEY.SENSORS.temperatureOffset]
+                        humidityOffset = 0
+                        if DATA_KEY.SENSORS.humidityOffset in itm[key]:
+                            humidityOffset = itm[key][DATA_KEY.SENSORS.humidityOffset]
+                        sensors[i][DATA_KEY.SENSORS.temperatureOffset] = temperatureOffset
+                        sensors[i][DATA_KEY.SENSORS.humidityOffset] = humidityOffset
+            if not modified:
+                sensors.append(itm) #Add new sensor if not already exists
+        return Actions._setData(data,response,DATA_KEY.sensors,sensors,actionName)
 
     #============#
     # Do Actions #
