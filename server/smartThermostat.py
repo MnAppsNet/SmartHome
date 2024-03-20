@@ -36,7 +36,7 @@ try:
                                 server.start()
                         primarySensor = data.getValue(DATA_KEY.primarySensor)
                         if (primarySensor == None): primarySensor = Constants.SENSOR_PIN
-                        print("Primary sensor: "+primarySensor)
+                        print("Primary sensor: "+str(primarySensor))
                         humidity,temperature = sensor.readData(primarySensor)
                         if temperature == None:
                                 print("Failed to get temperature... Trying again...")
