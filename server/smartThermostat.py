@@ -21,9 +21,10 @@ print(f"Server started at {host}:{port}")
 
 try:
         thermostat = Thermostat(Constants.THERMOSTAT_PIN,data)
+        print("Thermostat controller loaded...")
         #display = TemperatureAndHumidityScreen(data.getValue(DATA_KEY.font)) <= Can be commented out in a screen needed
         sensor = Sensor(Constants.SENSOR_PIN,data)
-
+        print("Sensor controller loaded...")
         try:
                 prevTemp = None
                 count = 0
@@ -31,9 +32,11 @@ try:
                 faultyTempCount = 0
                 while True:
                         if server.isActive() == False:
+                                print("Server is offline, restarting...")
                                 server.start()
                         primarySensor = data.getValue(DATA_KEY.primarySensor)
-                        if (primarySensor == None): primarySensor = 0
+                        if (primarySensor == None): primarySensor = Constants.SENSOR_PIN
+                        print("Primary sensor: "+primarySensor)
                         humidity,temperature = sensor.readData(primarySensor)
                         if temperature == None:
                                 print("Failed to get temperature... Trying again...")
