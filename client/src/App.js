@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import Const from './const';
 import Settings from './components/settings';
+import Sensors from './components/sensors';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
@@ -75,6 +76,7 @@ const App = () => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [stateLogs, setStateLogs] = useState({});
   const [schedule, setSchedule] = useState({});
+  const [sensors, setSensors] = useState({});
 
   function setAlert(message, status) {
     setAlertMessage(String(message));
@@ -111,7 +113,8 @@ const App = () => {
       RequiredTemperature: { get: () => requiredTemperature, set: (value) => setRequiredTemperature(value), send: sendRequiredTemperature },
       CurrentTemperature: { get: () => currentTemperature, set: (value) => setCurrentTemperature(value) },
       StateLogs: { get: () => stateLogs, set: (value) => setStateLogs(value) },
-      Schedule: { get: () => schedule, set: (value) => setSchedule(value) }
+      Schedule: { get: () => schedule, set: (value) => setSchedule(value) },
+      Sensors: { get: () => sensors, set: (value) => setSensors(value) }
     }
   }
 
@@ -142,6 +145,7 @@ const App = () => {
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             SmartThermostat
           </Typography>
+
           <Settings sx={{ position:'absolute', right: '10px', top:'10px'}} state={State} />
         </Toolbar>
         {alertType != null && alertMessage != null && <Alert  severity={alertType} onClick={() => setAlertType(null)}>{alertMessage}</Alert>}

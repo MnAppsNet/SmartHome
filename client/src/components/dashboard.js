@@ -13,6 +13,7 @@ import Slider from '@mui/material/Slider';
 import requestHandler from '../requestHandler'
 import Const from '../const'
 import History from './history'
+import Sensors from './sensors'
 import LeftIcon from '@mui/icons-material/ArrowLeft';
 import RightIcon from '@mui/icons-material/ArrowRight';
 import IconButton from '@mui/material/IconButton';
@@ -86,6 +87,7 @@ const Dashboard = (props) => {
             reqHandler.addCommand(Const.Commands.getStateLogs,
                 { "year": date.getFullYear(), "month": date.getMonth() + 1, "day": date.getDate() }
             );
+            reqHandler.addCommand(Const.Commands.getSensorData);
             reqHandler.sendCommands();
         } catch { }
     }
@@ -143,6 +145,11 @@ const Dashboard = (props) => {
                                 min={-10}
                                 step={0.1}
                                 marks={marks} />
+                        </Item>
+                    </Grid>
+                    <Grid key='sensors' xs={12} style={{ padding: '2px' }}>
+                        <Item title={'Sensors List'}>
+                            <Sensors state={State} />
                         </Item>
                     </Grid>
                     <Grid key='stateLogs' xs={12} style={{ padding: '2px' }}>

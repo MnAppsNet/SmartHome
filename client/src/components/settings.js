@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import AddTemperatureSchedule from './addTemperatureSchedule';
+import AddSensor from './addSensor';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import requestHandler from '../requestHandler'
@@ -35,6 +36,7 @@ export default function Settings(props) {
 
     const [open, setOpen] = useState(false);
     const [schedule, setSchedule] = useState({});
+    const [sensors, setSensors] = useState([]);
     const [refreshRate,setRefreshRate] = useState(60);
     const [tempOffset,setTempOffset] = useState(0.5);
 
@@ -54,6 +56,9 @@ export default function Settings(props) {
         const scheduleCopy = JSON.parse(JSON.stringify(State.data.Schedule.get()));
         if (scheduleCopy != null) { setSchedule(scheduleCopy); }
         else setSchedule({});
+        const s = State.data.Sensors.get();
+        if (s != null) { setSensors(s); }
+        else setSensors([]);
         setRefreshRate(State.data.RefreshRate.get())
         setTempOffset(State.data.TemperatureOffset.get())
         setOpen(true);
@@ -63,6 +68,8 @@ export default function Settings(props) {
     };
     const handleSave = () => {
         saveTemperatureSchedule();
+        saveSensorData();
+        reqHandler.sendCommands();
         setOpen(false);
     };
     const saveTemperatureSchedule = () => {
@@ -73,7 +80,10 @@ export default function Settings(props) {
         reqHandler.addCommand(Const.Commands.setRefreshRate, refreshRate);
         reqHandler.addCommand(Const.Commands.setTemperatureOffset, tempOffset);
         reqHandler.addCommand(Const.Commands.doSave);
-        reqHandler.sendCommands();
+    }
+    const saveSensorData = () => {
+        reqHandler.addCommand(Const.Commands.setSensorData, sensors);
+        reqHandler.addCommand(Const.Commands.getSensorData);
     }
     const deleteFromTemperatureSchedule = (time) => {
         const newSchedule = schedule;
@@ -82,6 +92,34 @@ export default function Settings(props) {
             setSchedule(newSchedule);
         } catch { }
         forceUpdate();
+    }
+    const makeSensorPrimary = (sensor,id) => {
+        if (!("name" in sensor)) sensor["name"] = "";
+        if (!("temperatureOffset" in sensor)) sensor["temperatureOffset"] = 0;
+        if (!("humidityOffset" in sensor)) sensor["humidityOffset"] = 0;
+        if (!("delete" in sensor)) sensor["delete"] = false;
+        if (!("primary" in sensor)) sensor["primary"] = false;
+        sensor["primary"] = true;
+        addSensor(id,sensor,sensor["temperatureOffset"],sensor["humidityOffset"],sensor["delete"],sensor["primary"]);
+    }
+    const deleteSensor = (sensor,id) => {
+        if (!("name" in sensor)) sensor["name"] = "";
+        if (!("temperatureOffset" in sensor)) sensor["temperatureOffset"] = 0;
+        if (!("humidityOffset" in sensor)) sensor["humidityOffset"] = 0;
+        if (!("delete" in sensor)) sensor["delete"] = false;
+        if (!("primary" in sensor)) sensor["primary"] = false;
+        sensor["delete"] = true;
+        addSensor(id,sensor,sensor["temperatureOffset"],sensor["humidityOffset"],sensor["delete"],sensor["primary"]);
+    }
+    const addSensor = (id,name,tempOffset,humidOffset,deleted=false,primary=false) => {
+        const tmpSensors = sensors;
+        if (!(id in tmpSensors)) tmpSensors[id] = {};
+        tmpSensors[id]["name"] = name;
+        tmpSensors[id]["temperatureOffset"] = tempOffset;
+        tmpSensors[id]["humidityOffset"] = humidOffset;
+        tmpSensors[id]["delete"] = deleted;
+        tmpSensors[id]["primary"] = primary;
+        setSensors(tmpSensors);
     }
 
     return (
@@ -120,7 +158,7 @@ export default function Settings(props) {
                         {
                             Object.keys(schedule).map((time, index) => {
                                 return (
-                                    <ListItem key={index} >
+                                    <ListItem key={"sh."+index} >
                                         <ListItemText primary={"Scheduled time : " + time} secondary={"Required Temperature : " + schedule[time]} />
                                         <IconButton onClick={() => deleteFromTemperatureSchedule(time)}><DeleteIcon sx={{ color: 'red' }} /></IconButton>
                                     </ListItem>
@@ -129,6 +167,31 @@ export default function Settings(props) {
                         }
                     </List>
                     <AddTemperatureSchedule onSave={addNewSchedule} />
+                </Box>
+                <Divider />
+                <Box sx={{ paddingTop: '20px', paddingBottom: '5px' }}>
+                    <Typography sx={{ backgroundColor: 'background.secondary', textAlign: 'center' }} variant="h5" component="div">
+                        Sensors List
+                    </Typography>
+                    <List sx={{ outlineStyle: 'solid', height: '20vh', overflowY: 'scroll' }}>
+                        {
+                            Object.keys(State.data.sensors).map((s, index) => {
+                                let deleted = false;
+                                let sensor = sensors[s]
+                                if ("delete" in sensor) deleted = sensor["delete"];
+                                if (!deleted)
+                                    return (
+                                        <ListItem key={"se."+index} >
+                                            <ListItemText primary={s} 
+                                                        secondary={"Temperature Offset : " + sensor["temperatureOffset"] + " | " + "Humidity Offset : " + sensor["humidityOffset"]} />
+                                            {!sensor["primary"] && <IconButton onClick={() => makeSensorPrimary(sensor,s)}><CheckCircleOutlineIcon sx={{ color: 'blue' }} /></IconButton> }
+                                            <AddSensor onSave={addSensor} sensor={sensor} state={State} />
+                                            <IconButton onClick={() => deleteSensor(sensor,s)}><DeleteIcon sx={{ color: 'red' }} /></IconButton>
+                                        </ListItem> );
+                            })
+                        }
+                    </List>
+                    <AddSensor onSave={addSensor} state={State} />
                 </Box>
                 <Divider />
                 <Box sx={{ paddingTop: '5px', paddingBottom: '5px'}}>

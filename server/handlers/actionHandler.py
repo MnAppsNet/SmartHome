@@ -2,6 +2,7 @@ from const import Constants
 from handlers.dataHandler import Data, DATA_KEY
 from handlers.responseHandler import RESPONSE_KEY, MESSAGE
 from controllers.thermostatController import MAX_TEMPERATURE_OFFSET
+from controllers.sensorController import Sensor
 from handlers.stateLogsHandler import StateLogs
 #from hashlib import sha256
 #import base64
@@ -137,7 +138,12 @@ class Actions:
         '''
         request : "actions":["getSensorData"]
         '''
-        return Actions._getData(data,response,DATA_KEY.sensors,actionName)
+        response = {}
+        if RESPONSE_KEY.data not in response:
+            response[RESPONSE_KEY.data] = {}
+        response[RESPONSE_KEY.data][actionName] = data.getValue(DATA_KEY.sensors)
+        response[RESPONSE_KEY.data][actionName][data.getValue(DATA_KEY.primarySensor)][DATA_KEY.SENSORS.primary] = True
+        return response
 
     #================#
     # Setter Actions #
@@ -202,36 +208,48 @@ class Actions:
 
     def setSensorData(data:Data,response:dict,value,actionName:str):
         '''
-        request : "actions":[{"setSensorData":[{"pin":"","ip":"","temperatureOffset":"","humidityOffset":""} , ...]}]
+        request : "actions":[{"setSensorData":{
+            "sensor_0":{"ip":"true/false",name:"","temperatureOffset":"","humidityOffset":"","delete":"false/true","primary":"false/true"} , ...},
+            "sensor_1":{"ip":"true/false",name:"","temperatureOffset":"","humidityOffset":"","delete":"false/true","primary":"false/true"} , ...},
+            ...
+            }
         '''
-        if type(value) is not list:
+        if type(value) != dict:
             return MESSAGE.setError(response,MESSAGE.wrongValueType,actionName)
+
         sensors = data.getValue(DATA_KEY.sensors)
+        primary = None
+
         for itm in value: #For each sesnor value received
-            key = None
-            #Check if pin or ip privided (key fields)
-            if DATA_KEY.SENSORS.pin in itm:
-                key = DATA_KEY.SENSORS.pin
-            elif DATA_KEY.SENSORS.ip in itm:
-                key = DATA_KEY.SENSORS.ip
-            else:
-                continue
-            #Check if pin or ip already exists and modify whatever changed
-            modified = False
-            for i in range(0,len(sensors)): 
-                if key in sensors[i]:
-                    modified = True
-                    if sensors[i][key] == itm[key]:
-                        temperatureOffset = 0
-                        if DATA_KEY.SENSORS.temperatureOffset in itm[key]:
-                            temperatureOffset = itm[key][DATA_KEY.SENSORS.temperatureOffset]
-                        humidityOffset = 0
-                        if DATA_KEY.SENSORS.humidityOffset in itm[key]:
-                            humidityOffset = itm[key][DATA_KEY.SENSORS.humidityOffset]
-                        sensors[i][DATA_KEY.SENSORS.temperatureOffset] = temperatureOffset
-                        sensors[i][DATA_KEY.SENSORS.humidityOffset] = humidityOffset
-            if not modified:
-                sensors.append(itm) #Add new sensor if not already exists
+
+            if DATA_KEY.SENSORS.delete in value[itm]: #Marked for deletion
+                if value[itm][DATA_KEY.SENSORS.delete]:
+                    if itm in sensors: del sensors[itm]
+                    continue
+            
+            if itm not in sensors: #Add new sensor
+                sensors[itm] = {
+                    DATA_KEY.SENSORS.name:"unnamed" if DATA_KEY.SENSORS.name not in value[itm] else value[itm][DATA_KEY.SENSORS.name],
+                    DATA_KEY.SENSORS.ip:Sensor.CheckIPSensor(itm),
+                    DATA_KEY.SENSORS.temperatureOffset:0 if DATA_KEY.SENSORS.temperatureOffset not in value[itm] else value[itm][DATA_KEY.SENSORS.temperatureOffset],
+                    DATA_KEY.SENSORS.humidityOffset:0 if DATA_KEY.SENSORS.humidityOffset not in value[itm] else value[itm][DATA_KEY.SENSORS.humidityOffset],
+                }
+            
+            else: #Modify existing sensor
+                if DATA_KEY.SENSORS.temperatureOffset in value[itm]:
+                    sensors[itm][DATA_KEY.SENSORS.temperatureOffset] =  value[itm][DATA_KEY.SENSORS.temperatureOffset]
+                if DATA_KEY.SENSORS.humidityOffset in value[itm]:
+                    sensors[itm][DATA_KEY.SENSORS.humidityOffset] =  value[itm][DATA_KEY.SENSORS.humidityOffset]
+                if DATA_KEY.SENSORS.name in value[itm]:
+                    sensors[itm][DATA_KEY.SENSORS.name] =  value[itm][DATA_KEY.SENSORS.name]
+                sensors[itm][DATA_KEY.SENSORS.ip] = Sensor.CheckIPSensor(itm)
+            
+            if DATA_KEY.SENSORS.primary in value[itm]: #Marked as primary sensor
+                    if value[itm][DATA_KEY.SENSORS.primary]:
+                        primary = itm
+
+        if primary != None:
+            data.setValue(DATA_KEY.primarySensor,primary)
         return Actions._setData(data,response,DATA_KEY.sensors,sensors,actionName)
 
     #============#

@@ -13,12 +13,14 @@ const Constants = {
         getLastUpdate: "getLastUpdate",
         getStateLogs: "getStateLogs",
         getSchedule: "getSchedule",
+        getSensorData: "getSensorData",
         //SET Commands >>
         setRequiredTemperature: "setRequiredTemperature",
         setThermostatState: "setThermostatState",
         setTemperatureOffset: "setTemperatureOffset",
         setRefreshRate: "setRefreshRate",
         setSchedule: "setSchedule",
+        setSensorData: "setSensorData",
         //DO Commands >>
         doSave: "doSave",
         doCreateUser: "doCreateUser",

@@ -1,4 +1,4 @@
-import traceback, pytz
+import traceback, pytz, os
 from controllers.displayController import Texts #, TemperatureAndHumidityScreen <= Can be commented out in a screen needed
 from controllers.sensorController import Sensor
 from controllers.thermostatController import Thermostat
@@ -22,7 +22,7 @@ print(f"Server started at {host}:{port}")
 try:
         thermostat = Thermostat(Constants.THERMOSTAT_PIN,data)
         #display = TemperatureAndHumidityScreen(data.getValue(DATA_KEY.font)) <= Can be commented out in a screen needed
-        sensor = Sensor(Constants.SENSOR_PIN)
+        sensor = Sensor(Constants.SENSOR_PIN,data)
 
         try:
                 prevTemp = None
@@ -84,3 +84,4 @@ except Exception as e:
                 server.stop()
         except:
                 pass
+        os._exit(1)

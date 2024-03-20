@@ -47,10 +47,7 @@ def client():
 @app.route("/kill", methods=['GET'])
 def shutdown():
     if server._serve: return
-    shutdown_func = request.environ.get('werkzeug.server.shutdown')
-    if shutdown_func is None:
-        raise RuntimeError('Not running werkzeug')
-    shutdown_func()
+    exit(0)
 
 #Remove a port mapping rule
 @app.route("/actions", methods=['POST'])
