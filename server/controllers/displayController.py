@@ -1,5 +1,7 @@
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_SSD1306
+try:
+    import Adafruit_GPIO.SPI as SPI
+    import Adafruit_SSD1306
+except: pass
 import time
 from PIL import Image, ImageDraw, ImageFont
 

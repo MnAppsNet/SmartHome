@@ -66,10 +66,11 @@ class Sensor():
         humidity += self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset]
         temperature += self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset]
 
-        if self._data != None and sensor == data.getValue(DATA_KEY.primarySensor):
-            #set current temperature from primary sensor
-            self._data.setValue(DATA_KEY.currentTemperature,temperature)
-            self._data.setValue(DATA_KEY.currentHumidity,humidity)
+        if self._data != None:
+            if sensor == self._data.getValue(DATA_KEY.primarySensor):
+                #set current temperature from primary sensor
+                self._data.setValue(DATA_KEY.currentTemperature,temperature)
+                self._data.setValue(DATA_KEY.currentHumidity,humidity)
         
         self._sensors[sensor][DATA_KEY.SENSORS.temperature] = temperature
         self._sensors[sensor][DATA_KEY.SENSORS.humidity] = humidity
