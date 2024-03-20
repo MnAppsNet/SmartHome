@@ -5,6 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
+import Divider from '@mui/material/Divider';
 
 const Sensors = (props) => {
     const State = props.state
@@ -24,6 +25,7 @@ const Sensors = (props) => {
     return (
         <List sx={{ width: '100%', height:'150px', bgcolor: 'background.paper', overflowX: "hidden", overflowY: "scroll", '&::-webkit-scrollbar': {width: '0'} }}>
           {sensorItems}
+          <Divider/>
         </List>
       );
 }

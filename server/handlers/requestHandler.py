@@ -97,10 +97,12 @@ class requestHandler():
                 self.response = actionMethod(
                     data, self.response, value, action)
 
-                if self.response[RESPONSE_KEY.status] == MESSAGE.Status.error:
-                    break
+                if RESPONSE_KEY.status in self.response:
+                    if self.response[RESPONSE_KEY.status] == MESSAGE.Status.error:
+                        break
             # END-FOR
-        except:
+        except Exception as e:
+            print(e)
             print(traceback.format_exc())
             self.response = MESSAGE.setError(
                 self.response, MESSAGE.actionsFailed)

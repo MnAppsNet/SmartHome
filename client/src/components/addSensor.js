@@ -17,6 +17,8 @@ export default function AddSensor(props) {
   const [tempOffset, setTempOffset] = React.useState(0);
   const [humidOffset, setHumidOffset] = React.useState(0);
   const [name, setName] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -75,6 +77,7 @@ export default function AddSensor(props) {
                      type="text"
                      onChange={(newName) => setName(newName.target.value)}
                      value={name}/>
+          <br />
           <TextField label="Temperature Offset"
                      variant="outlined"
                      type="number"

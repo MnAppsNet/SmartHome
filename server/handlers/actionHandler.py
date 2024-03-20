@@ -134,15 +134,14 @@ class Actions:
         '''
         return Actions._getData(data,response,DATA_KEY.schedule,actionName)
     
-    def getSensorData(data:Data,response:dict,value,actionName:str):
+    def getSensors(data:Data,response:dict,value,actionName:str):
         '''
-        request : "actions":["getSensorData"]
+        request : "actions":["getSensors"]
         '''
-        response = {}
         if RESPONSE_KEY.data not in response:
             response[RESPONSE_KEY.data] = {}
         response[RESPONSE_KEY.data][actionName] = data.getValue(DATA_KEY.sensors)
-        response[RESPONSE_KEY.data][actionName][data.getValue(DATA_KEY.primarySensor)][DATA_KEY.SENSORS.primary] = True
+        response[RESPONSE_KEY.data][actionName][str(data.getValue(DATA_KEY.primarySensor))][DATA_KEY.SENSORS.primary] = True
         return response
 
     #================#

@@ -13,6 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import AddTemperatureSchedule from './addTemperatureSchedule';
@@ -58,7 +59,7 @@ export default function Settings(props) {
         else setSchedule({});
         const s = State.data.Sensors.get();
         if (s != null) { setSensors(s); }
-        else setSensors([]);
+        else setSensors({});
         setRefreshRate(State.data.RefreshRate.get())
         setTempOffset(State.data.TemperatureOffset.get())
         setOpen(true);
@@ -94,31 +95,31 @@ export default function Settings(props) {
         forceUpdate();
     }
     const makeSensorPrimary = (sensor,id) => {
-        if (!("name" in sensor)) sensor["name"] = "";
-        if (!("temperatureOffset" in sensor)) sensor["temperatureOffset"] = 0;
-        if (!("humidityOffset" in sensor)) sensor["humidityOffset"] = 0;
-        if (!("delete" in sensor)) sensor["delete"] = false;
-        if (!("primary" in sensor)) sensor["primary"] = false;
-        sensor["primary"] = true;
-        addSensor(id,sensor,sensor["temperatureOffset"],sensor["humidityOffset"],sensor["delete"],sensor["primary"]);
+        if (!(Const.Sensor.name in sensor)) sensor[Const.Sensor.name] = "";
+        if (!(Const.Sensor.temperatureOffset in sensor)) sensor[Const.Sensor.temperatureOffset] = 0;
+        if (!(Const.Sensor.humidityOffset in sensor)) sensor[Const.Sensor.humidityOffset] = 0;
+        if (!(Const.Sensor.delete in sensor)) sensor[Const.Sensor.delete] = false;
+        if (!(Const.Sensor.primary in sensor)) sensor[Const.Sensor.primary] = false;
+        sensor[Const.Sensor.primary] = true;
+        addSensor(id,sensor,sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
     }
     const deleteSensor = (sensor,id) => {
-        if (!("name" in sensor)) sensor["name"] = "";
-        if (!("temperatureOffset" in sensor)) sensor["temperatureOffset"] = 0;
-        if (!("humidityOffset" in sensor)) sensor["humidityOffset"] = 0;
-        if (!("delete" in sensor)) sensor["delete"] = false;
-        if (!("primary" in sensor)) sensor["primary"] = false;
-        sensor["delete"] = true;
-        addSensor(id,sensor,sensor["temperatureOffset"],sensor["humidityOffset"],sensor["delete"],sensor["primary"]);
+        if (!(Const.Sensor.name in sensor)) sensor[Const.Sensor.name] = "";
+        if (!(Const.Sensor.temperatureOffset in sensor)) sensor[Const.Sensor.temperatureOffset] = 0;
+        if (!(Const.Sensor.humidityOffset in sensor)) sensor[Const.Sensor.humidityOffset] = 0;
+        if (!(Const.Sensor.delete in sensor)) sensor[Const.Sensor.delete] = false;
+        if (!(Const.Sensor.primary in sensor)) sensor[Const.Sensor.primary] = false;
+        sensor[Const.Sensor.delete] = true;
+        addSensor(id,sensor,sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
     }
     const addSensor = (id,name,tempOffset,humidOffset,deleted=false,primary=false) => {
         const tmpSensors = sensors;
         if (!(id in tmpSensors)) tmpSensors[id] = {};
-        tmpSensors[id]["name"] = name;
-        tmpSensors[id]["temperatureOffset"] = tempOffset;
-        tmpSensors[id]["humidityOffset"] = humidOffset;
-        tmpSensors[id]["delete"] = deleted;
-        tmpSensors[id]["primary"] = primary;
+        tmpSensors[id][Const.Sensor.name] = name;
+        tmpSensors[id][Const.Sensor.temperatureOffset] = tempOffset;
+        tmpSensors[id][Const.Sensor.humidityOffset] = humidOffset;
+        tmpSensors[id][Const.Sensor.delete] = deleted;
+        tmpSensors[id][Const.Sensor.primary] = primary;
         setSensors(tmpSensors);
     }
 
@@ -175,7 +176,7 @@ export default function Settings(props) {
                     </Typography>
                     <List sx={{ outlineStyle: 'solid', height: '20vh', overflowY: 'scroll' }}>
                         {
-                            Object.keys(State.data.sensors).map((s, index) => {
+                            Object.keys(sensors).map((s, index) => {
                                 let deleted = false;
                                 let sensor = sensors[s]
                                 if ("delete" in sensor) deleted = sensor["delete"];

@@ -13,7 +13,7 @@ const Constants = {
         getLastUpdate: "getLastUpdate",
         getStateLogs: "getStateLogs",
         getSchedule: "getSchedule",
-        getSensorData: "getSensorData",
+        getSensorData: "getSensors",
         //SET Commands >>
         setRequiredTemperature: "setRequiredTemperature",
         setThermostatState: "setThermostatState",
@@ -57,6 +57,13 @@ const Constants = {
         localSessionID      : "localSessionID",
         server              : "server",
         requiredTemperature : "requiredTemperature"
+    },
+    Sensor : {
+        name                : "name",
+        temperatureOffset   : "temperatureOffset",
+        humidityOffset      : "humidityOffset",
+        delete              : "delete",
+        primary             : "primary"
     }
 }
 

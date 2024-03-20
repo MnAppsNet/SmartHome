@@ -6,6 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import StateOnIcon from '@mui/icons-material/LocalFireDepartment';
 import StateOffIcon from '@mui/icons-material/InvertColorsOff';
+import Divider from '@mui/material/Divider';
 
 const Log = (props) =>{
     const log = props.log
@@ -39,6 +40,7 @@ const History = (props) => {
     return (
         <List sx={{ width: '100%', height:'150px', bgcolor: 'background.paper', overflowX: "hidden", overflowY: "scroll", '&::-webkit-scrollbar': {width: '0'} }}>
           {logItems}
+          <Divider/>
         </List>
       );
 }

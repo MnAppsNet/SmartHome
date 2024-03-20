@@ -17,7 +17,7 @@ class Sensor():
         if (self._sensors == None ): self._sensors = {}
         if (not self._sensors):
             self._sensors = {
-                primarySensorPin:{
+                str(primarySensorPin):{
                     DATA_KEY.SENSORS.ip:False,
                     DATA_KEY.SENSORS.name:"Main"
                 }
@@ -40,6 +40,7 @@ class Sensor():
         temperature = 0
         if (sensor==-1): sensor = data.getValue(DATA_KEY.primarySensor)
         if (sensor==None): sensor = Constants.SENSOR_PIN
+        sensor = str(sensor)
 
         if (DATA_KEY.SENSORS.humidityOffset not in self._sensors[sensor]):
             self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset] = 0
@@ -77,7 +78,7 @@ class Sensor():
         return humidity,temperature
 
     def getHumidity(self,sensor = 0):
-        return self._sensors[sensor][DATA_KEY.SENSORS.humidity]
+        return self._sensors[str(sensor)][DATA_KEY.SENSORS.humidity]
 
     def getTemperature(self, sensor = 0):
-        return self._sensors[sensor][DATA_KEY.SENSORS.temperature]
+        return self._sensors[str(sensor)][DATA_KEY.SENSORS.temperature]
