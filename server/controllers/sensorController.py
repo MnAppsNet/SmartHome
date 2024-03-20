@@ -56,7 +56,7 @@ class Sensor():
 
         if (not self._sensors[sensor][DATA_KEY.SENSORS.ip]): #PIN sensor
             if dht != None:
-                humidity,temperature = dht.read_retry(dht.DHT22, self._sensors[sensor][DATA_KEY.SENSORS.pin])
+                humidity,temperature = dht.read_retry(dht.DHT22, sensor)
         else: #IP sensor
             response = requests.get(sensor)
             if (DATA_KEY.SENSORS.temperature in response): temperature = response[DATA_KEY.SENSORS.temperature]
