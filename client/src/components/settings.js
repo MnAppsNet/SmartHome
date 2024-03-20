@@ -101,7 +101,8 @@ export default function Settings(props) {
         if (!(Const.Sensor.delete in sensor)) sensor[Const.Sensor.delete] = false;
         if (!(Const.Sensor.primary in sensor)) sensor[Const.Sensor.primary] = false;
         sensor[Const.Sensor.primary] = true;
-        addSensor(id,sensor,sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
+        addSensor(id,sensor[Const.Sensor.name],sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
+        forceUpdate();
     }
     const deleteSensor = (sensor,id) => {
         if (!(Const.Sensor.name in sensor)) sensor[Const.Sensor.name] = "";
@@ -110,17 +111,25 @@ export default function Settings(props) {
         if (!(Const.Sensor.delete in sensor)) sensor[Const.Sensor.delete] = false;
         if (!(Const.Sensor.primary in sensor)) sensor[Const.Sensor.primary] = false;
         sensor[Const.Sensor.delete] = true;
-        addSensor(id,sensor,sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
+        addSensor(id,sensor[Const.Sensor.name],sensor[Const.Sensor.temperatureOffset],sensor[Const.Sensor.humidityOffset],sensor[Const.Sensor.delete],sensor[Const.Sensor.primary]);
+        forceUpdate();
     }
-    const addSensor = (id,name,tempOffset,humidOffset,deleted=false,primary=false) => {
+    const addSensor = (id,name,tempOffset,humidOffset,deleted=null,primary=null) => {
         const tmpSensors = sensors;
         if (!(id in tmpSensors)) tmpSensors[id] = {};
         tmpSensors[id][Const.Sensor.name] = name;
         tmpSensors[id][Const.Sensor.temperatureOffset] = tempOffset;
         tmpSensors[id][Const.Sensor.humidityOffset] = humidOffset;
-        tmpSensors[id][Const.Sensor.delete] = deleted;
-        tmpSensors[id][Const.Sensor.primary] = primary;
+        if (deleted === null)
+            if (Const.Sensor.delete in sensors[id])
+                tmpSensors[id][Const.Sensor.delete] = sensors[id][Const.Sensor.delete]
+        else tmpSensors[id][Const.Sensor.delete] = deleted;
+        if (primary === null)
+        if (Const.Sensor.primary in sensors[id])
+        tmpSensors[id][Const.Sensor.primary] = sensors[id][Const.Sensor.primary]
+        else tmpSensors[id][Const.Sensor.primary] = primary;
         setSensors(tmpSensors);
+        forceUpdate();
     }
 
     return (
@@ -178,16 +187,20 @@ export default function Settings(props) {
                         {
                             Object.keys(sensors).map((s, index) => {
                                 let deleted = false;
-                                let sensor = sensors[s]
+                                let sensor = {};
+                                sensor[s] = sensors[s];
+                                let name = s;
+                                if (!('.' in name)) name = "GPIO_" + name
+                                if (Const.Sensor.name in sensors[s]) name += " - " + sensors[s][Const.Sensor.name]
                                 if ("delete" in sensor) deleted = sensor["delete"];
                                 if (!deleted)
                                     return (
                                         <ListItem key={"se."+index} >
-                                            <ListItemText primary={s} 
-                                                        secondary={"Temperature Offset : " + sensor["temperatureOffset"] + " | " + "Humidity Offset : " + sensor["humidityOffset"]} />
-                                            {!sensor["primary"] && <IconButton onClick={() => makeSensorPrimary(sensor,s)}><CheckCircleOutlineIcon sx={{ color: 'blue' }} /></IconButton> }
+                                            <ListItemText primary={name}
+                                                        secondary={"Temperature Offset : " + sensor[s]["temperatureOffset"] + " | " + "Humidity Offset : " + sensor[s]["humidityOffset"]} />
+                                            {!sensor[s]["primary"] && <IconButton onClick={() => makeSensorPrimary(sensor[s],s)}><CheckCircleOutlineIcon sx={{ color: 'blue' }} /></IconButton> }
                                             <AddSensor onSave={addSensor} sensor={sensor} state={State} />
-                                            <IconButton onClick={() => deleteSensor(sensor,s)}><DeleteIcon sx={{ color: 'red' }} /></IconButton>
+                                            {!sensor[s]["primary"] && <IconButton onClick={() => deleteSensor(sensor[s],s)}><DeleteIcon sx={{ color: 'red' }} /></IconButton> }
                                         </ListItem> );
                             })
                         }

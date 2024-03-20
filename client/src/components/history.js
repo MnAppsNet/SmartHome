@@ -25,6 +25,7 @@ const Log = (props) =>{
                 }
             </ListItemAvatar>
             <ListItemText primary={logText} secondary={log.time} />
+            <Divider/>
           </ListItem>
     )
 }
@@ -40,7 +41,6 @@ const History = (props) => {
     return (
         <List sx={{ width: '100%', height:'150px', bgcolor: 'background.paper', overflowX: "hidden", overflowY: "scroll", '&::-webkit-scrollbar': {width: '0'} }}>
           {logItems}
-          <Divider/>
         </List>
       );
 }

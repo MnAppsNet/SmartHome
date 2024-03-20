@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box } from '@mui/material';
+import Const from '../const'
 
 export default function AddSensor(props) {
   const [editMode, setEditMode] = React.useState(false);
@@ -18,6 +19,7 @@ export default function AddSensor(props) {
   const [humidOffset, setHumidOffset] = React.useState(0);
   const [name, setName] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [title,setTitle] = React.useState("Add New Sensor")
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -34,17 +36,19 @@ export default function AddSensor(props) {
 
   if ("sensor" in props){
     Object.keys(props["sensor"]).map((s, _) => {
-      if ("temperatureOffset" in props["sensor"][s]) setTempOffset(props["sensor"][s]["temperatureOffset"])
-      if ("humidityOffset" in props["sensor"][s]) setHumidOffset(props["sensor"][s]["humidityOffset"])
+      if (Const.Sensor.temperatureOffset in props["sensor"][s]) setTempOffset(props["sensor"][s][Const.Sensor.temperatureOffset])
+      if (Const.Sensor.humidityOffset in props["sensor"][s]) setHumidOffset(props["sensor"][s][Const.Sensor.humidityOffset])
+      if (Const.Sensor.name in props["sensor"][s]) setName(props["sensor"][s][Const.Sensor.name])
       setId(s)
     });
     setEditMode(true);
+    setTitle("Edit Sensor")
     delete props["sensor"];
   }
   return (
     <Box sx={props.sx}>
       <Button fullWidth variant="outlined" onClick={handleClickOpen} sx={{color:'text.secondary'}}>
-        Add New Sensor
+        {title}
       </Button>
       <Dialog
         open={open}
@@ -59,7 +63,7 @@ export default function AddSensor(props) {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} component="div">
-              Add New Sensor
+              {title}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -69,7 +73,9 @@ export default function AddSensor(props) {
           <TextField label="Sensor PIN or IP"
                      variant="outlined"
                      type="text"
-                     onChange={(newId) => (editMode)?setId(newId.target.value):setId(id)}
+                     onChange={(newId) => { 
+                        if (!editMode) setId(newId.target.value)
+                      }}
                      InputProps={{readOnly: editMode}}
                      value={id}/>
           <TextField label="Sensor Name"

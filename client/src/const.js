@@ -63,7 +63,9 @@ const Constants = {
         temperatureOffset   : "temperatureOffset",
         humidityOffset      : "humidityOffset",
         delete              : "delete",
-        primary             : "primary"
+        primary             : "primary",
+        temperature         : "temperature",
+        humidity            : "humidity",
     }
 }
 

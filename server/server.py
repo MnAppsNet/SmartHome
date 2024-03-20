@@ -29,6 +29,7 @@ class Server():
         server = self
         self._serve = True
         try:
+            server._host = "192.168.100.205"
             app.run(port=server._port, host=server._host)
         except Exception as e:
             print(str(e))

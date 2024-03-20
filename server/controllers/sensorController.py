@@ -1,5 +1,5 @@
 from handlers.dataHandler import Data, DATA_KEY
-import requests
+import requests, socket
 try:
     import Adafruit_DHT as dht
 except:
@@ -25,10 +25,18 @@ class Sensor():
             self._data.setValue(DATA_KEY.sensors, self._sensors)
 
     def CheckIPSensor(sensor):
-        response = requests.get(sensor)
-        if (DATA_KEY.SENSORS.temperature in response or DATA_KEY.SENSORS.humidity in response):
-            return True
-        else: return False
+        try:
+            response = requests.get(sensor,
+                headers={
+                    'Content-Type': 'application/json',
+                    'Connection'  : 'keep-alive',
+                    'User-Agent'  : 'SmartThermostatClient'
+                })
+            if (DATA_KEY.SENSORS.temperature in response or DATA_KEY.SENSORS.humidity in response):
+                return True
+            else: return False
+        except Exception as e: 
+            return False
 
     def updateSensorReadings(self):
         for sensor in self._sensors:
