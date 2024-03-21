@@ -16,6 +16,7 @@ Additional WiFi sensors can be added to the smart thermistat service. They are m
     * **./prerequisites.sh**: to install all needed prerequisites
     * **./build.sh**: to build the client webapp and link it to the server
     * **./server/smartThermostat.py**: to start the Smart Thermostat server (it also serves the client webapp)
+    * **./install_as_servicev.sh**: run this script optionally to install smartThermostat as a service that starts automatically on boot
 * The webapp will run on port **6969** by default. You can change the port in the data.json file, after the initial execution of **./server/smartThermostat.py** script.
 * Additional sensors can be added through the webapp. The sensors can either be connected directly to the raspberry pi or connected remotely.
 
