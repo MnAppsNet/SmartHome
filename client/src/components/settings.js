@@ -204,6 +204,7 @@ export default function Settings(props) {
                                 if (Const.Sensor.name in sensors[s]) name += " - " + sensors[s][Const.Sensor.name]
                                 if ("delete" in sensor[s]) deleted = sensor[s]["delete"];
                                 if ("primary" in sensor[s]) primary = sensor[s]["primary"];
+                                if (primary) name += " ☆"
                                 if (!deleted)
                                     return (
                                         <ListItem key={"se."+index} >

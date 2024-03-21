@@ -22,14 +22,14 @@ const Sensors = (props) => {
         let name = String(s);
         if (!(name.includes('.'))) name = "GPIO_" + name
         if (Const.Sensor.name in sensors[s]) name += " - " + sensors[s][Const.Sensor.name]
+        if (sensors[s][Const.Sensor.primary]) name += " ☆"
         sensorItems.push(
         <ListItem>
             <ListItemAvatar>
                 {!sensors[s][Const.Sensor.offline] && <SensorsIcon fontSize='large' sx={{color:"green"}} />}
                 {sensors[s][Const.Sensor.offline] && <SensorsOffIcon fontSize='large' sx={{color:"red"}} />}
             </ListItemAvatar>
-            {sensors[s][Const.Sensor.primary] && <StarBorderIcon/>}
-            <ListItemText primary={name} secondary={"Temperature: "+(Math.round(sensors[s]["temperature"]*100)/100).toFixed(2)+" °C | Humidity: "+(Math.round(sensors[s]["humidity"]*100)/100).toFixed(2)+" %"} />
+            <ListItemText primary={name} secondary={"Temperature: "+(Math.round(sensors[s]["temperature"]*100)/100).toFixed(2)+" °C | Humidity: "+(Math.round(sensors[s]["humidity"]*100)/100).toFixed(2)+" %"}/>
             <Divider/>
         </ListItem>);
     });
