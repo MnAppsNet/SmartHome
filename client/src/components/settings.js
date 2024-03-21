@@ -63,6 +63,7 @@ export default function Settings(props) {
         setRefreshRate(State.data.RefreshRate.get())
         setTempOffset(State.data.TemperatureOffset.get())
         setOpen(true);
+        forceUpdate();
     };
     const handleClose = () => {
         setOpen(false);
@@ -124,10 +125,18 @@ export default function Settings(props) {
             if (Const.Sensor.delete in sensors[id])
                 tmpSensors[id][Const.Sensor.delete] = sensors[id][Const.Sensor.delete]
         else tmpSensors[id][Const.Sensor.delete] = deleted;
-        if (primary === null)
-        if (Const.Sensor.primary in sensors[id])
-        tmpSensors[id][Const.Sensor.primary] = sensors[id][Const.Sensor.primary]
-        else tmpSensors[id][Const.Sensor.primary] = primary;
+        if (primary === null){
+            if (Const.Sensor.primary in sensors[id])
+                tmpSensors[id][Const.Sensor.primary] = sensors[id][Const.Sensor.primary];
+        }
+        else {
+            tmpSensors[id][Const.Sensor.primary] = primary;
+            if (primary)
+            Object.keys(tmpSensors).map((s, _) => {
+                if (s !== id) 
+                    tmpSensors[s][Const.Sensor.primary] = false;
+            });
+        };
         setSensors(tmpSensors);
         forceUpdate();
     }
@@ -187,20 +196,22 @@ export default function Settings(props) {
                         {
                             Object.keys(sensors).map((s, index) => {
                                 let deleted = false;
+                                let primary = false;
                                 let sensor = {};
                                 sensor[s] = sensors[s];
-                                let name = s;
-                                if (!('.' in name)) name = "GPIO_" + name
+                                let name = String(s);
+                                if (!(name.includes('.'))) name = "GPIO_" + name
                                 if (Const.Sensor.name in sensors[s]) name += " - " + sensors[s][Const.Sensor.name]
-                                if ("delete" in sensor) deleted = sensor["delete"];
+                                if ("delete" in sensor[s]) deleted = sensor[s]["delete"];
+                                if ("primary" in sensor[s]) primary = sensor[s]["primary"];
                                 if (!deleted)
                                     return (
                                         <ListItem key={"se."+index} >
                                             <ListItemText primary={name}
                                                         secondary={"Temperature Offset : " + sensor[s]["temperatureOffset"] + " | " + "Humidity Offset : " + sensor[s]["humidityOffset"]} />
-                                            {!sensor[s]["primary"] && <IconButton onClick={() => makeSensorPrimary(sensor[s],s)}><CheckCircleOutlineIcon sx={{ color: 'blue' }} /></IconButton> }
+                                            {!primary && <IconButton onClick={() => makeSensorPrimary(sensor[s],s)}><CheckCircleOutlineIcon sx={{ color: 'blue' }} /></IconButton> }
                                             <AddSensor onSave={addSensor} sensor={sensor} state={State} />
-                                            {!sensor[s]["primary"] && <IconButton onClick={() => deleteSensor(sensor[s],s)}><DeleteIcon sx={{ color: 'red' }} /></IconButton> }
+                                            {!primary && <IconButton onClick={() => deleteSensor(sensor[s],s)}><DeleteIcon sx={{ color: 'red' }} /></IconButton> }
                                         </ListItem> );
                             })
                         }

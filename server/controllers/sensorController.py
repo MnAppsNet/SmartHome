@@ -25,18 +25,9 @@ class Sensor():
             self._data.setValue(DATA_KEY.sensors, self._sensors)
 
     def CheckIPSensor(sensor):
-        try:
-            response = requests.get(sensor,
-                headers={
-                    'Content-Type': 'application/json',
-                    'Connection'  : 'keep-alive',
-                    'User-Agent'  : 'SmartThermostatClient'
-                })
-            if (DATA_KEY.SENSORS.temperature in response or DATA_KEY.SENSORS.humidity in response):
-                return True
-            else: return False
-        except Exception as e: 
-            return False
+        if ('.' in sensor or ':' in sensor): 
+            return True
+        return False
 
     def updateSensorReadings(self):
         for sensor in self._sensors:
@@ -55,7 +46,7 @@ class Sensor():
         if (DATA_KEY.SENSORS.temperatureOffset not in self._sensors[sensor]):
             self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset] = 0
         if (DATA_KEY.SENSORS.ip not in self._sensors[sensor]):
-            self._sensors[sensor][DATA_KEY.SENSORS.ip] = bool('.' in sensor)
+            self._sensors[sensor][DATA_KEY.SENSORS.ip] = False
         if (DATA_KEY.SENSORS.temperature not in self._sensors[sensor]):
             self._sensors[sensor][DATA_KEY.SENSORS.temperature] = 0
         if (DATA_KEY.SENSORS.humidity not in self._sensors[sensor]):
@@ -63,13 +54,26 @@ class Sensor():
         if (DATA_KEY.SENSORS.name not in self._sensors[sensor]):
             self._sensors[sensor][DATA_KEY.SENSORS.name] = "Unnamed"
 
+        self._sensors[sensor][DATA_KEY.SENSORS.ip] = Sensor.CheckIPSensor(sensor)
+
         if (not self._sensors[sensor][DATA_KEY.SENSORS.ip]): #PIN sensor
             if dht != None:
-                humidity,temperature = dht.read_retry(dht.DHT22, sensor)
+                try:
+                    humidity,temperature = dht.read_retry(dht.DHT22, sensor)
+                    self._sensors[sensor][DATA_KEY.SENSORS.offline] = False
+                except:
+                    self._sensors[sensor][DATA_KEY.SENSORS.offline] = True
         else: #IP sensor
-            response = requests.get(sensor)
-            if (DATA_KEY.SENSORS.temperature in response): temperature = response[DATA_KEY.SENSORS.temperature]
-            if (DATA_KEY.SENSORS.humidity in response): humidity = response[DATA_KEY.SENSORS.humidity]
+            try:
+                response = requests.get(sensor)
+                json_resp = response.json()
+                if (DATA_KEY.SENSORS.temperature in json_resp): temperature = float(json_resp[DATA_KEY.SENSORS.temperature])
+                if (DATA_KEY.SENSORS.humidity in json_resp): humidity = float(json_resp[DATA_KEY.SENSORS.humidity])
+                self._sensors[sensor][DATA_KEY.SENSORS.offline] = False
+            except:
+                self._sensors[sensor][DATA_KEY.SENSORS.offline] = True
+                temperature = 0
+                humidity = 0
 
         #Apply offsets
         humidity += self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset]

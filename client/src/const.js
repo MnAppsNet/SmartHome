@@ -66,6 +66,7 @@ const Constants = {
         primary             : "primary",
         temperature         : "temperature",
         humidity            : "humidity",
+        offline             : "offline"
     }
 }
 

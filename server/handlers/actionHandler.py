@@ -141,7 +141,12 @@ class Actions:
         if RESPONSE_KEY.data not in response:
             response[RESPONSE_KEY.data] = {}
         response[RESPONSE_KEY.data][actionName] = data.getValue(DATA_KEY.sensors)
-        response[RESPONSE_KEY.data][actionName][str(data.getValue(DATA_KEY.primarySensor))][DATA_KEY.SENSORS.primary] = True
+        primarySensor = str(data.getValue(DATA_KEY.primarySensor))
+        for s in response[RESPONSE_KEY.data][actionName]:
+            if (s == primarySensor):
+                response[RESPONSE_KEY.data][actionName][s][DATA_KEY.SENSORS.primary] = True
+            else:
+                response[RESPONSE_KEY.data][actionName][s][DATA_KEY.SENSORS.primary] = False
         return response
 
     #================#

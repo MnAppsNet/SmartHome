@@ -32,6 +32,7 @@ class DATA_KEY:
         humidityOffset      = "humidityOffset"
         delete              = "delete"
         primary             = "primary"
+        offline             = "offline"
     class USERS_KEY:
         username = 'username'
         password = 'password'
