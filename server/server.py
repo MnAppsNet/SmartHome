@@ -2,8 +2,8 @@ from handlers.dataHandler import Data
 from handlers.requestHandler import requestHandler
 from threading import Thread
 from const import Constants
-from flask import Flask, request, render_template
-import requests
+from flask import Flask, request, render_template, send_from_directory
+import requests, os
 
 server = None
 app = Flask(__name__, static_folder=Constants.FRONTEND_STATIC, template_folder=Constants.FRONTEND)
@@ -40,9 +40,13 @@ class Server():
 
 
 #Returns the frontend client
-@app.route("/", methods=['GET'])
-def client():
-    return render_template('index.html')
+@app.route("/", defaults={'path': ''}, methods=['GET'])
+@app.route('/<path:path>', methods=['GET'])
+def client(path):
+    if path != '' and os.path.exists(app.static_folder + "/" + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/kill", methods=['GET'])
 def shutdown():

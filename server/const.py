@@ -1,7 +1,7 @@
 import pathlib
 
 class Constants:
-    FRONTEND_STATIC = 'client/static'
+    FRONTEND_STATIC = 'client'
     FRONTEND = 'client'
 
     TIMEZONE = 'Europe/Athens'
@@ -15,4 +15,4 @@ class Constants:
 
     THERMOSTAT_PIN = 11
     SENSOR_PIN = 4
-    SAVE_EVERY = 5 #Loops. after these amount of loops of the service, the data will be hard saved automatically
+    SAVE_EVERY = 1 #Loops. after these amount of loops of the service, the data will be hard saved automatically

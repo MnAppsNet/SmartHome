@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import traceback, pytz, os
 from controllers.displayController import Texts #, TemperatureAndHumidityScreen <= Can be commented out in a screen needed
 from controllers.sensorController import Sensor

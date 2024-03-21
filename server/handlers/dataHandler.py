@@ -41,7 +41,7 @@ DEFAULT_ADMIN_USER = 'admin'
 DEFAULT_ADMIN_PASSWORD = '756bc47cb5215dc3329ca7e1f7be33a2dad68990bb94b76d90aa07f4e44a233a'
 
 DEFAULT_VALUES = {
-    DATA_KEY.host : "192.168.100.100",
+    DATA_KEY.host : "0.0.0.0",
     DATA_KEY.port : 6969,
     DATA_KEY.serviceStatus : False,
     DATA_KEY.currentTemperature : 0, #*C

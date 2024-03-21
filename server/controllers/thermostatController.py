@@ -113,8 +113,8 @@ class Thermostat:
             time = int(time)
             #Check if schedule applies and if yes set required temperature :
             if (time >= prevTime and time <= currentTime ):
-                self.setTemperatureThreshold(schedule[key]);
-                break;
+                self.setTemperatureThreshold(schedule[key])
+                break
 
     def checkState(self,temperature):
         '''
