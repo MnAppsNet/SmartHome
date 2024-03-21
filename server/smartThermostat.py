@@ -81,8 +81,8 @@ try:
         data.setValue(DATA_KEY.serviceStatus,False)
         server.stop()
 except Exception as e:
-        print(str(e))
-        print(traceback.format_exc())
+        print(str(e),flush=True)
+        print(traceback.format_exc(),flush=True)
         data.setValue(DATA_KEY.serviceStatus,False)
         try:
                 server.stop()

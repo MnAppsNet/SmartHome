@@ -76,8 +76,8 @@ class Sensor():
                 humidity = 0
 
         #Apply offsets
-        humidity += self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset]
-        temperature += self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset]
+        humidity += float(self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset])
+        temperature += float(self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset])
 
         if self._data != None:
             if sensor == self._data.getValue(DATA_KEY.primarySensor):
