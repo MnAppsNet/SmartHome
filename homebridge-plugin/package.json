@@ -1,9 +1,9 @@
 {
   "private": false,
   "displayName": "SmartThermostat",
-  "name": "smart-thermostat",
+  "name": "homebridge-smart-thermostat",
   "version": "1.1.1",
-  "description": "A homebridge plugin for SmartThermostat (https://github.com/MnAppsNet/SmartThermostat)",
+  "description": "A homebridge plugin for SmartThermostat  (https://github.com/MnAppsNet/SmartThermostat)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
