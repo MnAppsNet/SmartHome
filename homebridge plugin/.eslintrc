@@ -13,6 +13,7 @@
     "dist"
   ],
   "rules": {
+    "no-unused-vars": "off",
     "quotes": ["warn", "single"],
     "indent": ["warn", 2, { "SwitchCase": 1 }],
     "semi": ["off"],
