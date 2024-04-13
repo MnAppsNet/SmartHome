@@ -1,0 +1,22 @@
+{
+  "pluginAlias": "SmartThermostat",
+  "pluginType": "accessory",
+  "singular": false,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "required": true,
+        "default": "Smart Thermostat"
+      },
+      "ip": {
+        "title": "SmartThermostat Server (IP:Port)",
+        "type": "string",
+        "default": "192.168.1.1",
+        "required": true
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
 {
-  "private": true,
+  "private": false,
   "displayName": "SmartThermostat",
   "name": "smart-thermostat",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A homebridge plugin for SmartThermostat (https://github.com/MnAppsNet/SmartThermostat)",
   "license": "Apache-2.0",
   "repository": {
@@ -13,12 +13,12 @@
     "url": "https://github.com/MnAppsNet/SmartThermostat/issues"
   },
   "engines": {
-    "node": "^18.17.0 || ^20.9.0",
-    "homebridge": "^1.6.0"
+    "node": ">=14.18.1",
+    "homebridge": ">=1.3.5"
   },
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint src/**/*.ts --max-warnings=0",
+    "lint": "eslint src/**.ts --max-warnings=0 && prettier --write .",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run lint && npm run build"
@@ -27,17 +27,20 @@
     "homebridge-plugin"
   ],
   "devDependencies": {
-    "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^7.6.0",
-    "@typescript-eslint/parser": "^7.6.0",
-    "eslint": "^8.57.0",
-    "homebridge": "^1.7.0",
-    "nodemon": "^3.1.0",
-    "rimraf": "^5.0.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "@types/node": "^16.10.9",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "homebridge": "^1.3.5",
+    "nodemon": "^2.0.13",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.3.0",
+    "typescript": "^4.4.4"
   },
   "dependencies": {
-    "axios": "^1.6.8"
+    "axios": "^1.1.3"
   }
 }
