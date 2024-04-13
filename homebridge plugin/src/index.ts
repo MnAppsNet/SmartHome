@@ -1,6 +1,5 @@
 
 import { PLATFORM_NAME } from './settings';
-import { ExampleHomebridgePlatform } from './platform';
 import axios from 'axios';
 import {
   AccessoryConfig,
@@ -16,11 +15,6 @@ import {
 } from 'homebridge';
 
 let hap: HAP;
-
-export = (api: API) => {
-  hap = api.hap;
-  api.registerPlatform(PLATFORM_NAME, HTTPThermostat);
-};
 
 class HTTPThermostat implements AccessoryPlugin {
 
@@ -269,3 +263,8 @@ class HTTPThermostat implements AccessoryPlugin {
     );
   }
 }
+
+export = (api: API) => {
+	hap = api.hap;
+	api.registerAccessory(PLATFORM_NAME, HTTPThermostat);
+  };
