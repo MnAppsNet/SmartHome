@@ -28,6 +28,7 @@ class Thermostat:
             self._data.setValue(DATA_KEY.thermostat,self._pin)
         self._isRemote = Thermostat.CheckIPThermostat(self._pin)
         if (self._isRemote):
+            self._pin = str(self._pin)
             if not self._pin.endswith("/"): self._pin += "/"
             if not self._pin.starswith("http"): self._pin = "http://"+self._pin
         self._off = False                    #Thermostat is not off and it is working
@@ -37,6 +38,7 @@ class Thermostat:
             GPIO.setup(self._pin, GPIO.OUT, initial=False)
 
     def CheckIPThermostat(thermostat):
+        thermostat = str(thermostat)
         if ('.' in thermostat or ':' in thermostat):
             return True
         return False
