@@ -21,7 +21,7 @@ server.start()
 print(f"Server started at {host}:{port}")
 
 try:
-        thermostat = Thermostat(Constants.THERMOSTAT_PIN,data)
+        thermostat = Thermostat(data)
         print("Thermostat controller loaded...")
         #display = TemperatureAndHumidityScreen(data.getValue(DATA_KEY.font)) <= Can be commented out in a screen needed
         sensor = Sensor(Constants.SENSOR_PIN,data)

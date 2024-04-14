@@ -1,12 +1,9 @@
 from handlers.dataHandler import Data, DATA_KEY
-import requests, socket
-try:
+import requests
+try: #Support for DHT22 temperature sensor
     import Adafruit_DHT as dht
 except:
-    dht = None #For testing purposes
-'''
-This script is for DHT22 temperature and humidity sensors.
-'''
+    dht = None
 
 class Sensor():
     def __init__(self,primarySensorPin,dataHandler:Data = None):
@@ -55,7 +52,6 @@ class Sensor():
             self._sensors[sensor][DATA_KEY.SENSORS.name] = "Unnamed"
 
         self._sensors[sensor][DATA_KEY.SENSORS.ip] = Sensor.CheckIPSensor(sensor)
-
         if (not self._sensors[sensor][DATA_KEY.SENSORS.ip]): #PIN sensor
             if dht != None:
                 try:

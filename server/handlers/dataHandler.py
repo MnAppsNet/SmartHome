@@ -23,6 +23,8 @@ class DATA_KEY:
     schedule            = 'schedule'
     sensors             = 'sensors'
     primarySensor       = 'primarySensor'
+    thermostat          = 'thermostat'
+    thermostatSecret    = 'thermostatSecret'
     class SENSORS:
         ip                  = "ip"
         name                = "name"
@@ -53,7 +55,8 @@ DEFAULT_VALUES = {
     DATA_KEY.font : '',
     DATA_KEY.thermostatOff : False,
     DATA_KEY.thermostatState : False, #Closed
-    DATA_KEY.sensors : {}, #Define sensors to be used - dictionaries with either 'pin' or 'ip' as key
+    DATA_KEY.sensors : {},      #Define sensors to be used - dictionaries with either 'pin' or 'ip' as key
+    DATA_KEY.thermostat : Constants.THERMOSTAT_PIN, #Thermostat PIN or IP
     #[ { "pin"/"ip":"" 
     # "temperature":"",
     # "humidity":"",

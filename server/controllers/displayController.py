@@ -5,11 +5,6 @@ except: pass
 import time
 from PIL import Image, ImageDraw, ImageFont
 
-'''
-This script is working with an SD1306 OLED display with size 128x64.
-The size can be changed from within the constructor
-'''
-
 class Display():
     def __init__(self,font='',imageRotation = 180):
         try:
@@ -47,7 +42,7 @@ class Display():
         draw.text((0, self.y),text,  font=font, fill=255)
         _,_,_,height = font.getbbox(text)
         self.y += height + spaceAfterLine
-        print(text);
+        print(text)
 
     def flush(self):
         if self.image == None: return

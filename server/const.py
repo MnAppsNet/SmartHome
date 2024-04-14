@@ -13,6 +13,8 @@ class Constants:
     LOCAL_FILE_NAME = str(pathlib.Path(__file__).parent.resolve().joinpath('data.json'))
     LOCAL_FILE_NAME_STATE_LOGS = str(pathlib.Path(__file__).parent.resolve().joinpath('state_changes.json'))
 
-    THERMOSTAT_PIN = 11
-    SENSOR_PIN = 4
+    THERMOSTAT_PIN = 11 #PIN or IP of initial thermostat to use
+    SENSOR_PIN = 4 #PIN or IP of initial sensor to use
     SAVE_EVERY = 1 #Loops. after these amount of loops of the service, the data will be hard saved automatically
+
+    REQUEST_HEADER_HASH = "HASH"
