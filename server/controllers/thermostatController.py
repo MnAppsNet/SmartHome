@@ -30,7 +30,7 @@ class Thermostat:
         if (self._isRemote):
             self._pin = str(self._pin)
             if not self._pin.endswith("/"): self._pin += "/"
-            if not self._pin.starswith("http"): self._pin = "http://"+self._pin
+            if not self._pin.startswith("http"): self._pin = "http://"+self._pin
         self._off = False                    #Thermostat is not off and it is working
         if GPIO != None:
             GPIO.setwarnings(False)
