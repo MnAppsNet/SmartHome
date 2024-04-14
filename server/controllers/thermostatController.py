@@ -31,12 +31,14 @@ class Thermostat:
             self._pin = str(self._pin)
             if not self._pin.endswith("/"): self._pin += "/"
             if not self._pin.startswith("http"): self._pin = "http://"+self._pin
-        self._off = False                    #Thermostat is not off and it is working
-        if GPIO != None:
-            GPIO.setwarnings(False)
-            GPIO.setmode(GPIO.BOARD)
-            GPIO.setup(self._pin, GPIO.OUT, initial=False)
+        else:
+            if GPIO != None:
+                GPIO.setwarnings(False)
+                GPIO.setmode(GPIO.BOARD)
+                GPIO.setup(self._pin, GPIO.OUT, initial=False)
 
+        self._off = False                    #Thermostat is not off and it is working
+        
     def CheckIPThermostat(thermostat):
         thermostat = str(thermostat)
         if ('.' in thermostat or ':' in thermostat):
