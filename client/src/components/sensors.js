@@ -23,6 +23,8 @@ const Sensors = (props) => {
         if (!(name.includes('.'))) name = "GPIO_" + name
         if (Const.Sensor.name in sensors[s]) name += " - " + sensors[s][Const.Sensor.name]
         if (sensors[s][Const.Sensor.primary]) name += " ☆"
+        if (name.startsWith("http://")) name = name.replace("http://","")
+        if (name.startsWith("https://")) name = name.replace("https://","")
         sensorItems.push(
         <ListItem>
             <ListItemAvatar>

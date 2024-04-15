@@ -39,37 +39,35 @@ try:
                         if (primarySensor == None): primarySensor = Constants.SENSOR_PIN
                         print("Primary sensor: "+str(primarySensor))
                         humidity,temperature = sensor.readData(primarySensor)
-                        if temperature == None:
-                                print("Failed to get temperature... Trying again...")
-                                continue
-                        if (prevTemp == None): prevTemp = temperature #Initialize...
-                        if ( temperature < prevTemp - tempChangeRange or temperature > prevTemp + tempChangeRange ):
-                                #Very huge temperature difference in a sort time frame
-                                #Measure could be faulty... Try again...
-                                print("Measurement seems faulty... Try again...")
-                                faultyTempCount += 1
-                                if faultyTempCount > 20:
-                                        #If we think a faulty measurement for 20 times, then it is probably not faulty...
+                        if temperature != None:
+                                if (prevTemp == None): prevTemp = temperature #Initialize...
+                                if ( temperature < prevTemp - tempChangeRange or temperature > prevTemp + tempChangeRange ):
+                                        #Very huge temperature difference in a sort time frame
+                                        #Measure could be faulty... Try again...
+                                        print("Measurement seems faulty... Try again...")
+                                        faultyTempCount += 1
+                                        if faultyTempCount > 20:
+                                                #If we think a faulty measurement for 20 times, then it is probably not faulty...
+                                                prevTemp = temperature
+                                        continue
+                                else:
                                         prevTemp = temperature
-                                continue
-                        else:
-                                prevTemp = temperature
-                                faultyTempCount = 0
-                        thermostat.checkTemperatureSchedule()
-                        thermostatState = thermostat.checkState(temperature)
-                        #display.showData(humidity,temperature,thermostatState) <= Can be commented out in a screen needed
-                        if data == None: break
-                        data.setValue(DATA_KEY.serviceStatus,True)
-                        data.setValue(DATA_KEY.lastUpdate,datetime.now(pytz.timezone(Constants.TIMEZONE)).strftime("%H:%M:%S"))
-                        data.setValue(DATA_KEY.currentTemperature,temperature)
-                        data.setValue(DATA_KEY.currentHumidity,humidity)
-                        sensor.updateSensorReadings()
+                                        faultyTempCount = 0
+                                thermostat.checkTemperatureSchedule()
+                                thermostatState = thermostat.checkState(temperature)
+                                #display.showData(humidity,temperature,thermostatState) <= Can be commented out in a screen needed
+                                if data == None: break
+                                data.setValue(DATA_KEY.serviceStatus,True)
+                                data.setValue(DATA_KEY.lastUpdate,datetime.now(pytz.timezone(Constants.TIMEZONE)).strftime("%H:%M:%S"))
+                                data.setValue(DATA_KEY.currentTemperature,temperature)
+                                if humidity != None: data.setValue(DATA_KEY.currentHumidity,humidity)
+                                sensor.updateSensorReadings()
 
-                        #Print to console the current state :
-                        print(Texts.getLastUpdateTimeText())
-                        print(Texts.getHumidityText(humidity))
-                        print(Texts.getTemperatureText(temperature))
-                        print(Texts.getThermostatState(thermostatState))
+                                #Print to console the current state :
+                                print(Texts.getLastUpdateTimeText())
+                                print(Texts.getHumidityText(humidity))
+                                print(Texts.getTemperatureText(temperature))
+                                print(Texts.getThermostatState(thermostatState))
 
                         sleep(data.getValue(DATA_KEY.refreshRate))
                         count += 1

@@ -13,6 +13,8 @@ class Sensor():
         self._sensors = self._data.getValue(DATA_KEY.sensors)
         if (self._sensors == None ): self._sensors = {}
         if (not self._sensors):
+            if Sensor.CheckIPSensor(primarySensorPin) and not primarySensorPin.startswith("http"):
+                primarySensorPin = "http://"+primarySensorPin
             self._sensors = {
                 str(primarySensorPin):{
                     DATA_KEY.SENSORS.ip:False,
@@ -37,6 +39,7 @@ class Sensor():
         if (sensor==-1): sensor = data.getValue(DATA_KEY.primarySensor)
         if (sensor==None): sensor = Constants.SENSOR_PIN
         sensor = str(sensor)
+        if (Sensor.CheckIPSensor(sensor) and not sensor.startswith("http")): sensor = "http://"+sensor
 
         if (DATA_KEY.SENSORS.humidityOffset not in self._sensors[sensor]):
             self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset] = 0
@@ -53,12 +56,13 @@ class Sensor():
 
         self._sensors[sensor][DATA_KEY.SENSORS.ip] = Sensor.CheckIPSensor(sensor)
         if (not self._sensors[sensor][DATA_KEY.SENSORS.ip]): #PIN sensor
-            if dht != None:
-                try:
-                    humidity,temperature = dht.read_retry(dht.DHT22, sensor)
-                    self._sensors[sensor][DATA_KEY.SENSORS.offline] = False
-                except:
-                    self._sensors[sensor][DATA_KEY.SENSORS.offline] = True
+            try:
+                humidity,temperature = dht.read_retry(dht.DHT22, int(sensor))
+                self._sensors[sensor][DATA_KEY.SENSORS.offline] = False
+            except:
+                self._sensors[sensor][DATA_KEY.SENSORS.offline] = True
+                humidity = None
+                temperature = None
         else: #IP sensor
             try:
                 response = requests.get(sensor)
@@ -68,21 +72,23 @@ class Sensor():
                 self._sensors[sensor][DATA_KEY.SENSORS.offline] = False
             except:
                 self._sensors[sensor][DATA_KEY.SENSORS.offline] = True
-                temperature = 0
-                humidity = 0
+                humidity = None
+                temperature = None
 
         #Apply offsets
-        humidity += float(self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset])
-        temperature += float(self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset])
+        if humidity != None: humidity += float(self._sensors[sensor][DATA_KEY.SENSORS.humidityOffset])
+        if temperature != None: temperature += float(self._sensors[sensor][DATA_KEY.SENSORS.temperatureOffset])
 
         if self._data != None:
             if sensor == self._data.getValue(DATA_KEY.primarySensor):
                 #set current temperature from primary sensor
-                self._data.setValue(DATA_KEY.currentTemperature,temperature)
-                self._data.setValue(DATA_KEY.currentHumidity,humidity)
+                if temperature != None: self._data.setValue(DATA_KEY.currentTemperature,temperature)
+                if humidity != None: self._data.setValue(DATA_KEY.currentHumidity,humidity)
         
-        self._sensors[sensor][DATA_KEY.SENSORS.temperature] = temperature
-        self._sensors[sensor][DATA_KEY.SENSORS.humidity] = humidity
+        if temperature != None: self._sensors[sensor][DATA_KEY.SENSORS.temperature] = temperature
+        else: self._sensors[sensor][DATA_KEY.SENSORS.temperature] = 0
+        if humidity != None: self._sensors[sensor][DATA_KEY.SENSORS.humidity] = humidity
+        else: self._sensors[sensor][DATA_KEY.SENSORS.humidity] = 0
         return humidity,temperature
 
     def getHumidity(self,sensor = 0):

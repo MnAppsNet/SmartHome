@@ -117,6 +117,8 @@ export default function Settings(props) {
     }
     const addSensor = (id,name,tempOffset,humidOffset,deleted=null,primary=null) => {
         const tmpSensors = sensors;
+        id = String(id)
+        if (id.includes(".") && !id.startsWith("http")) id = "http://"+id
         if (!(id in tmpSensors)) tmpSensors[id] = {};
         tmpSensors[id][Const.Sensor.name] = name;
         tmpSensors[id][Const.Sensor.temperatureOffset] = tempOffset;
@@ -205,6 +207,8 @@ export default function Settings(props) {
                                 if ("delete" in sensor[s]) deleted = sensor[s]["delete"];
                                 if ("primary" in sensor[s]) primary = sensor[s]["primary"];
                                 if (primary) name += " ☆"
+                                if (name.startsWith("http://")) name = name.replace("http://","")
+                                if (name.startsWith("https://")) name = name.replace("https://","")
                                 if (!deleted)
                                     return (
                                         <ListItem key={"se."+index} >
