@@ -13,6 +13,10 @@ import {
 } from "homebridge";
 
 let hap: HAP;
+export = (api: API) => {
+  hap = api.hap;
+  api.registerAccessory("smart-thermostat", HTTPThermostat);
+};
 
 class HTTPThermostat implements AccessoryPlugin {
   private readonly GetRequiredTemperature = "getRequiredTemperature";
@@ -50,8 +54,8 @@ class HTTPThermostat implements AccessoryPlugin {
         maxValue: 30,
         minStep: 0.1,
       })
-      .on(CharacteristicEventTypes.GET, this.getTemperature.bind(this))
-      .on(CharacteristicEventTypes.SET, this.setTemperature.bind(this));
+      .on(CharacteristicEventTypes.GET, this.getTargetTemperature.bind(this))
+      .on(CharacteristicEventTypes.SET, this.setTargetTemperature.bind(this));
 
     // Current Temperature
     this.thermostatService
@@ -63,18 +67,7 @@ class HTTPThermostat implements AccessoryPlugin {
       .getCharacteristic(hap.Characteristic.CurrentRelativeHumidity)
       .on(CharacteristicEventTypes.GET, this.getHumidity.bind(this));
 
-    // Required Temperature
-    this.thermostatService
-      .getCharacteristic(hap.Characteristic.TargetRelativeHumidity)
-      .on(CharacteristicEventTypes.GET, this.getRequiredTemperature.bind(this));
-
     // Target Heating Cooling
-    this.thermostatService
-      .getCharacteristic(hap.Characteristic.TargetHeatingCoolingState)
-      .on(CharacteristicEventTypes.GET, this.getThermostatState.bind(this))
-      .on(CharacteristicEventTypes.SET, this.setThermostatState.bind(this));
-
-    // Current Heating Cooling
     this.thermostatService
       .getCharacteristic(hap.Characteristic.CurrentHeatingCoolingState)
       .on(CharacteristicEventTypes.GET, this.getThermostatState.bind(this));
@@ -87,8 +80,8 @@ class HTTPThermostat implements AccessoryPlugin {
 
     // Configure Information Service
     this.informationService = new hap.Service.AccessoryInformation()
-      .setCharacteristic(hap.Characteristic.Manufacturer, "MnApps")
-      .setCharacteristic(hap.Characteristic.Model, "SmartThermostat")
+      .setCharacteristic(hap.Characteristic.Manufacturer, "MnApps.NET")
+      .setCharacteristic(hap.Characteristic.Model, "smart-thermostat")
       .setCharacteristic(hap.Characteristic.SerialNumber, this.ip);
 
     log.info("Thermostat finished initializing!");
@@ -102,18 +95,21 @@ class HTTPThermostat implements AccessoryPlugin {
     callback: CharacteristicGetCallback
   ): Promise<void> {
     let state = hap.Characteristic.TargetHeatingCoolingState.OFF;
-    if (this.requiredTemperature > this.temperature) {
-      state = hap.Characteristic.TargetHeatingCoolingState.HEAT;
+    try {
+      callback(null, state);
+    } catch (e) {
+      this.log.error(`${e}`);
     }
-
-    callback(null, state);
-  }
-
-  private async setThermostatState(
-    value,
-    callback: CharacteristicGetCallback
-  ): Promise<void> {
-    callback();
+    try {
+      if (this.requiredTemperature > this.temperature) {
+        state = hap.Characteristic.TargetHeatingCoolingState.HEAT;
+      }
+      this.thermostatService
+        .getCharacteristic(hap.Characteristic.TargetHeatingCoolingState)
+        .updateValue(state);
+    } catch (e) {
+      this.log.error(`${e}`);
+    }
   }
 
   //Get current humidity
@@ -122,12 +118,15 @@ class HTTPThermostat implements AccessoryPlugin {
   ): Promise<void> {
     // Immediatly respond with potentially stale value
     const old_humidity = this.humidity;
-    callback(null, this.humidity);
-
+    try {
+      callback(null, this.humidity);
+    } catch (e) {
+      this.log.error(`${e}`);
+    }
     try {
       const humidity = await this.getData(this.GetCurrentHumidity);
       if (humidity !== null) {
-        this.temperature = humidity;
+        this.humidity = humidity;
         this.log.debug(`updated cached humidity: ${this.humidity}`);
       }
     } catch (e) {
@@ -146,13 +145,16 @@ class HTTPThermostat implements AccessoryPlugin {
   }
 
   // Get Current Required Temperature
-  private async getRequiredTemperature(
+  private async getTargetTemperature(
     callback: CharacteristicGetCallback
   ): Promise<void> {
     // Immediatly respond with potentially stale value
     const old_temperature = this.requiredTemperature;
-    callback(null, this.requiredTemperature);
-
+    try {
+      callback(null, this.requiredTemperature);
+    } catch (e) {
+      this.log.error(`${e}`);
+    }
     try {
       const requiredTemperature = await this.getData(
         this.GetRequiredTemperature
@@ -169,7 +171,7 @@ class HTTPThermostat implements AccessoryPlugin {
       // Update Characteristics
       if (old_temperature !== this.requiredTemperature) {
         this.thermostatService
-          .getCharacteristic(hap.Characteristic.CurrentTemperature)
+          .getCharacteristic(hap.Characteristic.TargetTemperature)
           .updateValue(this.requiredTemperature);
         this.log.debug(
           `updating characteristic value with cached required temperature: ${this.requiredTemperature}`
@@ -178,14 +180,38 @@ class HTTPThermostat implements AccessoryPlugin {
     }
   }
 
+  // Set Required Temperature
+  private async setTargetTemperature(
+    value: CharacteristicValue,
+    callback: CharacteristicSetCallback
+  ): Promise<void> {
+    try {
+      this.requiredTemperature = value as number;
+      try {
+        callback(null, this.requiredTemperature);
+      } catch (e) {
+        this.log.error(`${e}`);
+      }
+      await this.setData(this.SetRequiredTemperature, this.requiredTemperature);
+      this.thermostatService
+        .getCharacteristic(hap.Characteristic.TargetTemperature)
+        .updateValue(this.requiredTemperature);
+      this.log.debug(`Set Target Temperature to ${this.requiredTemperature}`);
+    } catch (e) {
+      this.log.error(`${e}`);
+    }
+  }
+
   // Get Current Temperature
   private async getTemperature(
     callback: CharacteristicGetCallback
   ): Promise<void> {
-    // Immediatly respond with potentially stale value
     const old_temperature = this.temperature;
-    callback(null, this.temperature);
-
+    try {
+      callback(null, this.temperature);
+    } catch (e) {
+      this.log.error(`${e}`);
+    }
     try {
       const temperature = await this.getData(this.GetCurrentTemperature);
       if (temperature !== null) {
@@ -207,25 +233,6 @@ class HTTPThermostat implements AccessoryPlugin {
     }
   }
 
-  // Set Required Temperature
-  private async setTemperature(
-    value: CharacteristicValue,
-    callback: CharacteristicSetCallback
-  ): Promise<void> {
-    try {
-      this.requiredTemperature = value as number;
-      await this.setData(this.SetRequiredTemperature, this.requiredTemperature);
-      this.thermostatService
-        .getCharacteristic(hap.Characteristic.TargetTemperature)
-        .updateValue(this.requiredTemperature);
-      this.log.debug(`Set Target Temperature to ${this.requiredTemperature}`);
-    } catch (e) {
-      this.log.error(`${e}`);
-    } finally {
-      callback();
-    }
-  }
-
   // Get Display Units
   private getDisplayUnits(callback: CharacteristicGetCallback): void {
     this.log.debug(`Responding with display units: ${this.display_units}`);
@@ -239,7 +246,7 @@ class HTTPThermostat implements AccessoryPlugin {
   ): void {
     this.display_units = value as number;
     this.log.debug(`Set display units: ${this.display_units}`);
-    callback();
+    callback(null, value);
   }
 
   private async getData(action: string) {
@@ -254,8 +261,3 @@ class HTTPThermostat implements AccessoryPlugin {
     await axios.post(this.serviceURL, { actions: [{ [action]: value }] });
   }
 }
-
-export = (api: API) => {
-  hap = api.hap;
-  api.registerAccessory("smart-thermostat", HTTPThermostat);
-};

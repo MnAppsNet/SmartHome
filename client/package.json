@@ -1,6 +1,6 @@
 {
   "name": "smart_thermostat_client",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "proxy": "http://localhost:6969",
   "private": true,
   "dependencies": {

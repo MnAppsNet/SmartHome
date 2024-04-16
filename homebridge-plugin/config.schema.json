@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "SmartThermostat",
+  "pluginAlias": "smart-thermostat",
   "pluginType": "accessory",
   "singular": false,
   "schema": {
