@@ -29,7 +29,6 @@ try:
         try:
                 prevTemp = None
                 count = 0
-                tempChangeRange = 5
                 faultyTempCount = 0
                 while True:
                         if server.isActive() == False:
@@ -41,14 +40,17 @@ try:
                         humidity,temperature = sensor.readData(primarySensor)
                         if temperature != None:
                                 if (prevTemp == None): prevTemp = temperature #Initialize...
-                                if ( temperature < prevTemp - tempChangeRange or temperature > prevTemp + tempChangeRange ):
+                                if ( temperature < prevTemp - Constants.MAX_TEMPERATURE_CHANGE or 
+                                   temperature > prevTemp + Constants.MAX_TEMPERATURE_CHANGE or 
+                                   temperature > Constants.MAX_TEMPERATURE ):
                                         #Very huge temperature difference in a sort time frame
                                         #Measure could be faulty... Try again...
                                         print("Measurement seems faulty... Try again...")
                                         faultyTempCount += 1
-                                        if faultyTempCount > 20:
+                                        if faultyTempCount > Constants.MAX_MEASUREMENT_RETRIES:
                                                 #If we think a faulty measurement for 20 times, then it is probably not faulty...
                                                 prevTemp = temperature
+                                        sleep(10)
                                         continue
                                 else:
                                         prevTemp = temperature

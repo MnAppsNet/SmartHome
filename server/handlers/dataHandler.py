@@ -1,8 +1,8 @@
 
-from os import path
+from os import path, remove
 from const import Constants
 from handlers.responseHandler import MESSAGE
-import json
+import json, shutil
 #from hashlib import sha256
 
 class DATA_KEY:
@@ -78,6 +78,7 @@ class Data:
     def __init__(self):
         self._data = {}
         self.load()
+        self.numberOfSaves = 0
 
     def getValue(self,key):
         if key not in self._data:
@@ -100,11 +101,23 @@ class Data:
         if not path.isfile(Constants.LOCAL_FILE_NAME):
             self._data = DEFAULT_VALUES
             return
-        try:
-            file = open(Constants.LOCAL_FILE_NAME,'r')
-        except:
-            return
-        self._data = json.load(file)
+        
+        data_loader = False
+        while not data_loader:
+            try:
+                file = open(Constants.LOCAL_FILE_NAME,'r')
+            except:
+                return
+            try:
+                self._data = json.load(file)
+                data_loader = True
+            except:
+                file.close()
+                if path.exists(Constants.LOCAL_FILE_NAME_BACKUP):
+                    shutil.copy2(Constants.LOCAL_FILE_NAME_BACKUP, Constants.LOCAL_FILE_NAME)
+                    remove(Constants.LOCAL_FILE_NAME_BACKUP)
+                else:
+                    return
         file.close()
 
     def save(self):
@@ -117,6 +130,15 @@ class Data:
                 return False
             json.dump(self._data,file)
             file.close()
+
+            #Backup data file
+            self.numberOfSaves += 1
+            if self.numberOfSaves >= Constants.BACKUP_EVERY:
+                self.numberOfSaves = 0
+                if path.exists(Constants.LOCAL_FILE_NAME):
+                    if path.exists(Constants.LOCAL_FILE_NAME_BACKUP):
+                        remove(Constants.LOCAL_FILE_NAME_BACKUP)
+                    shutil.copy2(Constants.LOCAL_FILE_NAME, Constants.LOCAL_FILE_NAME_BACKUP)
             return True
         except:
             return False
